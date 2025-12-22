@@ -1,0 +1,8 @@
+package wasmledger:sql;
+
+world core {
+  export pool;
+  export transaction;
+  export query;
+  export query-types;
+}

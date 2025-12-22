@@ -1,0 +1,12 @@
+package wasmledger:tx;
+
+interface core {
+  use types.{wallet, wallet-ref, wallet-error, transfer};
+
+  acquire-wallet: func(id: string) -> result<wallet-ref, wallet-error>;
+  commit-transfers: func(transfers: list<transfer>);
+}
+
+world tx {
+  export core;
+}

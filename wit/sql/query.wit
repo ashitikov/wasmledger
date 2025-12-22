@@ -1,0 +1,20 @@
+package wasmledger:sql;
+
+interface query {
+  use query-types.{sql-query, sql-string, query-results};
+  use util-types.{error};
+  use transaction.{transaction};
+
+  variant query-executor {
+    pool,
+    transaction(borrow<transaction>)
+  }
+
+  fetch-all: async func(query: sql-query, executor: query-executor) -> result<query-results, error>;
+
+  execute: async func(
+    query: sql-query, executor: query-executor
+  ) -> result<u64, error>;
+
+  execute-raw: async func(query: sql-string, executor: query-executor) -> result<_, error>;
+}

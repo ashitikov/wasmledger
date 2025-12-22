@@ -1,0 +1,25 @@
+[package]
+name = "wasmledger-sql"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+sqlx = { version = "0.8", optional = true, default-features = false, features = ["runtime-tokio", "tls-rustls-ring-webpki", "bigdecimal", "ipnet", "chrono", "uuid", "json", "any"] }
+wit-bindgen = "0.47.0"
+anyhow = "1.0.100"
+tokio = { version = "1.48.0", features = ["sync"] }
+chrono = "0.4.42"
+bigdecimal = "0.4.9"
+ipnet = "2.11.0"
+futures = "0.3.31"
+serde_json = { version = "1.0.145", features = ["raw_value"] }
+
+[features]
+default = ["postgres"]
+postgres = ["sqlx/postgres"]
+mysql = ["sqlx/mysql"]
+sqlite = ["sqlx/sqlite"]
+sqlite-unbundled = ["sqlx/sqlite-unbundled"]
+
+[lib]
+crate-type = ["cdylib"]

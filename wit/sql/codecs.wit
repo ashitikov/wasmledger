@@ -1,0 +1,16 @@
+package wasmledger:sql;
+
+interface codecs {
+  use util-types.{error};
+
+  type push-result = result<_, error>;
+
+  type row-index = u64;
+
+  variant column-index {
+    index(u64),
+    column-name(string)
+  }
+
+  type value-position = tuple<row-index, column-index>;
+}

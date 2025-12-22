@@ -1,0 +1,44 @@
+package wasmledger:sql;
+
+/// Types used by components and providers of a sql
+interface util-types {
+  variant error {
+    /// no rows returned by a query that expected to return at least one row.
+    row-not-found,
+
+    /// error occurred while encoding a value
+    encode(string),
+
+    /// error occurred while decoding
+    decode(string),
+
+    /// pool timed out while waiting for an open connection
+    pool-timed-out,
+
+    /// attempted to acquire a connection on a closed pool
+    pool-closed,
+
+    /// got unexpected connection status after attempting to begin transaction
+    begin-failed,
+
+    /// generic unexpected error
+    unexpected(string)
+  }
+}
+
+interface query-types {
+
+  type sql-string = string;
+
+  record sql-query {
+    sql: sql-string,
+    args: sql-arguments,
+    persistent: option<bool>,
+  }
+
+  resource sql-arguments {
+    constructor();
+  }
+
+  resource query-results;
+}

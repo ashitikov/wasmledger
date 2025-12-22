@@ -1,0 +1,13 @@
+package wasmledger:money;
+
+interface core {
+  use types.{money};
+
+  add: func(lhs: money, rhs: money) -> money;
+  subtract: func(lhs: money, rhs: money) -> money;
+  allocate: func(value: money, ratios: list<u8>) -> list<money>;
+}
+
+world money {
+  export core;
+}

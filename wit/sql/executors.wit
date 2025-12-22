@@ -1,0 +1,17 @@
+package wasmledger:sql;
+
+interface pool {
+  use util-types.{error};
+  use transaction.{transaction};
+
+  begin-transaction: async func() -> result<transaction, error>;
+}
+
+interface transaction {
+  use util-types.{error};
+
+  resource transaction {
+    commit: static async func(this: transaction) -> result<_, error>;
+    rollback: static async func(this: transaction) -> result<_, error>;
+  }
+}

@@ -1,0 +1,64 @@
+# ======================
+# Rust / Cargo
+# ======================
+
+/target
+**/target
+
+Cargo.lock
+!Cargo.lock
+
+# ======================
+# Rustfmt / Clippy
+# ======================
+
+.rustfmt.toml.bak
+
+# ======================
+# IDEs / Editors
+# ======================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# IntelliJ / CLion / RustRover
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+
+# ======================
+# OS
+# ======================
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ======================
+# WASM / tooling
+# ======================
+
+# wasm-pack
+pkg/
+.wasm-pack/
+
+# Wasmtime / Wasmer artifacts
+*.wasm
+*.wat
+
+# ======================
+# Logs / temp
+# ======================
+
+*.log

@@ -1,0 +1,12 @@
+package wasmledger:sql-postgres;
+
+interface postgres-codecs-ext {
+  use wasmledger:sql/query-types.{sql-arguments, query-results};
+  use wasmledger:sql/util-types.{error};
+  use wasmledger:sql/codecs.{push-result, value-position};
+
+  type hstore = list<tuple<string, option<string>>>;
+
+  push-hstore: func(value: option<hstore>, to: borrow<sql-arguments>) -> push-result;
+  get-hstore: func(%result: borrow<query-results>, position: value-position) -> result<option<hstore>, error>;
+}

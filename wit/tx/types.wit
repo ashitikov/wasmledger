@@ -1,0 +1,31 @@
+package wasmledger:tx;
+
+interface types {
+  use wasmledger:money/types.{money};
+
+  record wallet-snapshot {
+    id: string,
+    involume: u64,
+    outvolume: u64,
+    balance: s64,
+    currency: string,
+    precision: u8,
+  }
+
+  record wallet {
+    snapshot: wallet-snapshot,
+    ref: wallet-ref
+  }
+
+  record transfer {
+    source: wallet-ref,
+    destination: wallet-ref,
+    amount: money,
+  }
+
+  resource wallet-ref;
+
+  variant wallet-error {
+    not-found
+  }
+}

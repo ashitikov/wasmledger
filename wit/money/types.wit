@@ -1,0 +1,9 @@
+package wasmledger:money;
+
+interface types {
+  record money {
+    value: s64,
+    precision: u8,
+    currency: string
+  }
+}

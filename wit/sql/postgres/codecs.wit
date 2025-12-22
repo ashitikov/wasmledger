@@ -1,0 +1,196 @@
+package wasmledger:sql-postgres;
+
+interface postgres-codecs {
+  use wasmledger:sql/query-types.{sql-arguments, query-results};
+  use wasmledger:sql/util-types.{error};
+  use wasmledger:sql/codecs.{push-result, value-position};
+
+  push-int16: func(value: option<s16>, to: borrow<sql-arguments>) -> push-result;
+  get-int16: func(%result: borrow<query-results>, position: value-position) -> result<option<s16>, error>;
+
+  push-int32: func(value: option<s32>, to: borrow<sql-arguments>) -> push-result;
+  get-int32: func(%result: borrow<query-results>, position: value-position) -> result<option<s32>, error>;
+
+  push-int64: func(value: option<s64>, to: borrow<sql-arguments>) -> push-result;
+  get-int64: func(%result: borrow<query-results>, position: value-position) -> result<option<s64>, error>;
+
+  push-float32: func(value: option<f32>, to: borrow<sql-arguments>) -> push-result;
+  get-float32: func(%result: borrow<query-results>, position: value-position) -> result<option<f32>, error>;
+
+  push-float64: func(value: option<f64>, to: borrow<sql-arguments>) -> push-result;
+  get-float64: func(%result: borrow<query-results>, position: value-position) -> result<option<f64>, error>;
+
+  push-string: func(value: option<string>, to: borrow<sql-arguments>) -> push-result;
+  get-string: func(%result: borrow<query-results>, position: value-position) -> result<option<string>, error>;
+
+  push-bool: func(value: option<bool>, to: borrow<sql-arguments>) -> push-result;
+  get-bool: func(%result: borrow<query-results>, position: value-position) -> result<option<bool>, error>;
+
+  push-json: func(value: option<string>, to: borrow<sql-arguments>) -> push-result;
+  get-json: func(%result: borrow<query-results>, position: value-position) -> result<option<string>, error>;
+
+  type uuid = string;
+
+  push-uuid: func(value: option<uuid>, to: borrow<sql-arguments>) -> push-result;
+  get-uuid: func(%result: borrow<query-results>, position: value-position) -> result<option<uuid>, error>;
+
+
+  // variant pg-value {
+  //   /// SQL: NULL
+  //   null,
+
+  //   /// SQL: BIGINT, INT8
+  //   int64(s64),
+  //   /// SQL: BIGINT[], INT8[]
+  //   int64-array(list<s64>),
+
+  //   /// SQL: INTEGER, INT, INT4
+  //   int32(s32),
+  //   /// SQL: INTEGER[], INT4[]
+  //   int32-array(list<s32>),
+
+  //   /// SQL: SMALLINT, INT2
+  //   int2(s16),
+  //   /// SQL: SMALLINT[], INT2[]
+  //   int2-array(list<s16>),
+
+  //   /// SQL: DOUBLE PRECISION, FLOAT8
+  //   float8(hashable-f64),
+  //   /// SQL: DOUBLE PRECISION[], FLOAT8[]
+  //   float8-array(list<hashable-f64>),
+
+  //   /// SQL: REAL, FLOAT4
+  //   float4(hashable-f32),
+  //   /// SQL: REAL[], FLOAT4[]
+  //   float4-array(list<hashable-f32>),
+
+  //   /// SQL: BOOLEAN, BOOL
+  //   %bool(bool),
+  //   /// SQL: BOOLEAN[], BOOL[]
+  //   %bool-array(list<bool>),
+
+  //   /// SQL: NUMERIC, DECIMAL
+  //   numeric(numeric),
+  //   /// SQL: NUMERIC[], DECIMAL[]
+  //   numeric-array(list<numeric>),
+
+  //   /// SQL: BIT(n)
+  //   bit(list<u8>),
+  //   /// SQL: BIT(n)[]
+  //   bit-array(list<list<u8>>),
+
+  //   /// SQL: VARBIT(n)
+  //   varbit(list<u8>),
+  //   /// SQL: BIT VARYING[], VARBIT[]
+  //   varbit-array(list<list<u8>>),
+
+  //   /// SQL: BYTEA
+  //   bytea(list<u8>),
+  //   /// SQL: BYTEA[]
+  //   bytea-array(list<list<u8>>),
+
+  //   /// SQL: CHAR(n), CHARACTER(n)
+  //   %char(string),
+  //   /// SQL: CHAR(n)[]
+  //   %char-array(list<string>),
+
+  //   /// SQL: VARCHAR(n), CHARACTER VARYING(n)
+  //   varchar(string),
+  //   /// SQL: VARCHAR(n)[]
+  //   varchar-array(list<string>),
+
+  //   // Networking
+  //   /// SQL: CIDR
+  //   cidr(string),
+  //   /// SQL: CIDR[]
+  //   cidr-array(list<string>),
+
+  //   /// SQL: INET
+  //   inet(string),
+  //   /// SQL: INET[]
+  //   inet-array(list<string>),
+
+  //   /// SQL: MACADDR (EUI-48)
+  //   macaddr(mac-address-eui48),
+  //   /// SQL: MACADDR[]
+  //   macaddr-array(list<mac-address-eui48>),
+
+  //   /// SQL: MACADDR8 (EUI-64, deprecated)
+  //   macaddr8(mac-address-eui64),
+  //   /// SQL: MACADDR8[]
+  //   macaddr8-array(list<mac-address-eui64>),
+
+  //   // Date-time
+  //   /// SQL: DATE
+  //   date(date),
+  //   /// SQL: DATE[]
+  //   date-array(list<date>),
+
+  //   /// SQL: INTERVAL
+  //   interval(interval),
+  //   /// SQL: INTERVAL[]
+  //   interval-array(list<interval>),
+
+  //   /// SQL: TIME WITHOUT TIME ZONE
+  //   time(time),
+  //   /// SQL: TIME[]
+  //   time-array(list<time>),
+
+  //   /// SQL: TIME WITH TIME ZONE
+  //   time-tz(time-tz),
+  //   /// SQL: TIMETZ[]
+  //   time-tz-array(list<time-tz>),
+
+  //   /// SQL: TIMESTAMP WITHOUT TIME ZONE
+  //   timestamp(timestamp),
+  //   /// SQL: TIMESTAMP[]
+  //   timestamp-array(list<timestamp>),
+
+  //   /// SQL: TIMESTAMP WITH TIME ZONE, TIMESTAMPTZ
+  //   timestamp-tz(timestamp-tz),
+  //   /// SQL: TIMESTAMPTZ[]
+  //   timestamp-tz-array(list<timestamp-tz>),
+
+  //   // JSON
+  //   /// SQL: JSON
+  //   json(string),
+  //   /// SQL: JSON[]
+  //   json-array(list<string>),
+
+  //   /// SQL: JSONB
+  //   jsonb(string),
+  //   /// SQL: JSONB[]
+  //   jsonb-array(list<string>),
+
+  //   /// SQL: MONEY (internal fixed-point type)
+  //   money(numeric),
+  //   /// SQL: MONEY[]
+  //   money-array(list<numeric>),
+
+  //   // Text
+  //   /// SQL: NAME (system identifier type)
+  //   name(string),
+  //   /// SQL: NAME[]
+  //   name-array(list<string>),
+
+  //   /// SQL: TEXT
+  //   text(string),
+  //   /// SQL: TEXT[]
+  //   text-array(list<string>),
+
+  //   /// SQL: XML
+  //   xml(string),
+  //   /// SQL: XML[]
+  //   xml-array(list<string>),
+
+  //   // UUIDs
+  //   /// SQL: UUID
+  //   uuid(string),
+  //   /// SQL: UUID[]
+  //   uuid-array(list<string>),
+
+  //   // Containers
+  //   /// SQL: HSTORE (extension)
+  //   hstore(list<tuple<string, option<string>>>),
+  // }
+}
