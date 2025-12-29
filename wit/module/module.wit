@@ -1,0 +1,5 @@
+package wasmledger:module;
+
+interface module {
+  get-module-id: func() -> string;
+}

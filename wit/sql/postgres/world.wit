@@ -1,6 +1,0 @@
-package wasmledger:sql-postgres;
-
-world postgres {
-  export postgres-codecs;
-  export postgres-codecs-ext;
-}

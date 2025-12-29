@@ -1,0 +1,9 @@
+package wasmledger:core;
+
+world core {
+  import wasmledger:sql/transaction;
+  import wasmledger:sql/query;
+  import wasmledger:sql-postgres/postgres-codecs;
+  
+  export wasmledger:module/migrations;
+}

@@ -40,5 +40,7 @@ interface query-types {
     constructor();
   }
 
-  resource query-results;
+  resource query-results {
+    row-count: func() -> u64;
+  }
 }

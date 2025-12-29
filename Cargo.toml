@@ -1,10 +1,16 @@
-[package]
-name = "wasmledger"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-
 [workspace]
 resolver = "3"
-members = ["wasmledger-tx", "wasmledger-money", "wasmledger-sql"]
+members = [
+  "crates/tx",
+  "crates/money",
+  "crates/sql",
+  "crates/sql-client",
+  "crates/core",
+  "crates/migrations-macro",
+  "crates/utils",
+]
+
+[workspace.dependencies]
+wasmledger-sql-client = { path = "crates/sql-client" }
+wasmledger-utils = { path = "crates/utils" }
+wasmledger-migrations-macro = { path = "crates/migrations-macro" }

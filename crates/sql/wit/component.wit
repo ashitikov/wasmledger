@@ -1,0 +1,8 @@
+package wasmledger:sql-component;
+
+world component {
+  export wasmledger:sql/pool;
+  export wasmledger:sql/transaction;
+  export wasmledger:sql/query;
+  export wasmledger:sql/query-types;
+}

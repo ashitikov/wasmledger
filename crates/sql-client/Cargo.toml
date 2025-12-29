@@ -1,0 +1,13 @@
+[package]
+name = "wasmledger-sql-client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1.0.228", optional = true, features=["derive"] }
+wit-bindgen = "0.47.0"
+
+[features]
+default = ["postgres"]
+postgres = []
+serde = ["dep:serde"]

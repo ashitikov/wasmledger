@@ -1,0 +1,17 @@
+[package]
+name = "wasmledger-utils"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+wasmledger-migrations-macro = { workspace = true, optional = true }
+wasmledger-sql-client = { workspace = true, features = [
+  "postgres",
+], optional = true }
+
+[features]
+default = ["migrations"]
+migrations = [
+  "wasmledger-migrations-macro",
+  "wasmledger-sql-client",
+]
