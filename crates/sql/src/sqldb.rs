@@ -1,4 +1,4 @@
-use sqlx::Pool;
+use sqlx::{Pool};
 
 #[cfg(feature = "postgres")]
 pub(crate) type SqlDatabase = sqlx::Postgres;
@@ -17,4 +17,7 @@ impl SqlDB {
     pub fn new(pool: Pool<SqlDatabase>) -> Self {
         Self { pool: pool }
     }
-}
+} 
+
+// pub use sqlx::pool::PoolOptions as PoolOptions;
+pub type SqlDatabasePoolOption = sqlx::pool::PoolOptions<SqlDatabase>;

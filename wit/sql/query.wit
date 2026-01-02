@@ -3,10 +3,12 @@ package wasmledger:sql;
 interface query {
   use query-types.{sql-query, sql-string, query-results};
   use util-types.{error};
+  use connection.{connection};
   use transaction.{transaction};
 
   variant query-executor {
     pool,
+    connection(borrow<connection>),
     transaction(borrow<transaction>)
   }
 

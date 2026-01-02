@@ -107,7 +107,7 @@ mod bindings {
                     }
                     #[doc(hidden)]
                     #[allow(non_snake_case, unused_unsafe)]
-                    pub unsafe fn _export_async_list_migrations_cabi<T: Guest>() -> i32 {
+                    pub unsafe fn _export_list_migrations_cabi<T: Guest>() -> i32 {
                         unsafe {
                             wit_bindgen::rt::async_support::start_task(async move {
                                 let _task_cancel = wit_bindgen::rt::async_support::TaskCancelOnDrop::new();
@@ -147,7 +147,7 @@ mod bindings {
                     }
                     #[doc(hidden)]
                     #[allow(non_snake_case)]
-                    pub unsafe fn __callback_async_list_migrations(
+                    pub unsafe fn __callback_list_migrations(
                         event0: u32,
                         event1: u32,
                         event2: u32,
@@ -162,7 +162,7 @@ mod bindings {
                     }
                     #[doc(hidden)]
                     #[allow(non_snake_case, unused_unsafe)]
-                    pub unsafe fn _export_async_apply_migration_cabi<T: Guest>(
+                    pub unsafe fn _export_apply_migration_cabi<T: Guest>(
                         arg0: *mut u8,
                         arg1: usize,
                         arg2: i32,
@@ -259,7 +259,7 @@ mod bindings {
                     }
                     #[doc(hidden)]
                     #[allow(non_snake_case)]
-                    pub unsafe fn __callback_async_apply_migration(
+                    pub unsafe fn __callback_apply_migration(
                         event0: u32,
                         event1: u32,
                         event2: u32,
@@ -274,7 +274,7 @@ mod bindings {
                     }
                     #[doc(hidden)]
                     #[allow(non_snake_case, unused_unsafe)]
-                    pub unsafe fn _export_async_check_schema_cabi<T: Guest>(
+                    pub unsafe fn _export_check_schema_cabi<T: Guest>(
                         arg0: i32,
                         arg1: i32,
                     ) -> i32 {
@@ -395,7 +395,7 @@ mod bindings {
                     }
                     #[doc(hidden)]
                     #[allow(non_snake_case)]
-                    pub unsafe fn __callback_async_check_schema(
+                    pub unsafe fn __callback_check_schema(
                         event0: u32,
                         event1: u32,
                         event2: u32,
@@ -440,7 +440,7 @@ mod bindings {
         }
     }
     mod _rt {
-        #![allow(dead_code, clippy::all)]
+        #![allow(dead_code, unused_imports, clippy::all)]
         pub use alloc_crate::string::String;
         pub unsafe fn cabi_dealloc(ptr: *mut u8, size: usize, align: usize) {
             if size == 0 {
@@ -470,9 +470,9 @@ mod bindings {
         wit_bindgen::rt::maybe_link_cabi_realloc();
     }
     const _: &[u8] = b"package wasmledger:sql;\n\ninterface pool {\n  use util-types.{error};\n  use transaction.{transaction};\n\n  begin-transaction: async func() -> result<transaction, error>;\n}\n\ninterface transaction {\n  use util-types.{error};\n\n  resource transaction {\n    commit: static async func(this: transaction) -> result<_, error>;\n    rollback: static async func(this: transaction) -> result<_, error>;\n  }\n}";
+    const _: &[u8] = b"package wasmledger:sql;\n\ninterface codecs {\n  use util-types.{error};\n\n  type push-result = result<_, error>;\n\n  type row-index = u64;\n\n  variant column-index {\n    index(u64),\n    column-name(string)\n  }\n\n  type value-position = tuple<row-index, column-index>;\n}";
     const _: &[u8] = b"package wasmledger:sql;\n\ninterface query {\n  use query-types.{sql-query, sql-string, query-results};\n  use util-types.{error};\n  use transaction.{transaction};\n\n  variant query-executor {\n    pool,\n    transaction(borrow<transaction>)\n  }\n\n  fetch-all: async func(query: sql-query, executor: query-executor) -> result<query-results, error>;\n\n  execute: async func(\n    query: sql-query, executor: query-executor\n  ) -> result<u64, error>;\n\n  execute-raw: async func(query: sql-string, executor: query-executor) -> result<_, error>;\n}";
     const _: &[u8] = b"package wasmledger:sql;\n\n/// Types used by components and providers of a sql\ninterface util-types {\n  variant error {\n    /// no rows returned by a query that expected to return at least one row.\n    row-not-found,\n\n    /// error occurred while encoding a value\n    encode(string),\n\n    /// error occurred while decoding\n    decode(string),\n\n    /// pool timed out while waiting for an open connection\n    pool-timed-out,\n\n    /// attempted to acquire a connection on a closed pool\n    pool-closed,\n\n    /// got unexpected connection status after attempting to begin transaction\n    begin-failed,\n\n    /// generic unexpected error\n    unexpected(string)\n  }\n}\n\ninterface query-types {\n\n  type sql-string = string;\n\n  record sql-query {\n    sql: sql-string,\n    args: sql-arguments,\n    persistent: option<bool>,\n  }\n\n  resource sql-arguments {\n    constructor();\n  }\n\n  resource query-results {\n    row-count: func() -> u64;\n  }\n}";
-    const _: &[u8] = b"package wasmledger:sql;\n\ninterface codecs {\n  use util-types.{error};\n\n  type push-result = result<_, error>;\n\n  type row-index = u64;\n\n  variant column-index {\n    index(u64),\n    column-name(string)\n  }\n\n  type value-position = tuple<row-index, column-index>;\n}";
     const _: &[u8] = b"package wasmledger:sql-postgres;\n\ninterface postgres-codecs {\n  use wasmledger:sql/query-types.{sql-arguments, query-results};\n  use wasmledger:sql/util-types.{error};\n  use wasmledger:sql/codecs.{push-result, value-position};\n\n  push-int16: func(value: option<s16>, to: borrow<sql-arguments>) -> push-result;\n  get-int16: func(%result: borrow<query-results>, position: value-position) -> result<option<s16>, error>;\n\n  push-int32: func(value: option<s32>, to: borrow<sql-arguments>) -> push-result;\n  get-int32: func(%result: borrow<query-results>, position: value-position) -> result<option<s32>, error>;\n\n  push-int64: func(value: option<s64>, to: borrow<sql-arguments>) -> push-result;\n  get-int64: func(%result: borrow<query-results>, position: value-position) -> result<option<s64>, error>;\n\n  push-float32: func(value: option<f32>, to: borrow<sql-arguments>) -> push-result;\n  get-float32: func(%result: borrow<query-results>, position: value-position) -> result<option<f32>, error>;\n\n  push-float64: func(value: option<f64>, to: borrow<sql-arguments>) -> push-result;\n  get-float64: func(%result: borrow<query-results>, position: value-position) -> result<option<f64>, error>;\n\n  push-string: func(value: option<string>, to: borrow<sql-arguments>) -> push-result;\n  get-string: func(%result: borrow<query-results>, position: value-position) -> result<option<string>, error>;\n\n  push-bool: func(value: option<bool>, to: borrow<sql-arguments>) -> push-result;\n  get-bool: func(%result: borrow<query-results>, position: value-position) -> result<option<bool>, error>;\n\n  push-json: func(value: option<string>, to: borrow<sql-arguments>) -> push-result;\n  get-json: func(%result: borrow<query-results>, position: value-position) -> result<option<string>, error>;\n\n  type uuid = string;\n\n  push-uuid: func(value: option<uuid>, to: borrow<sql-arguments>) -> push-result;\n  get-uuid: func(%result: borrow<query-results>, position: value-position) -> result<option<uuid>, error>;\n\n\n  // variant pg-value {\n  //   /// SQL: NULL\n  //   null,\n\n  //   /// SQL: BIGINT, INT8\n  //   int64(s64),\n  //   /// SQL: BIGINT[], INT8[]\n  //   int64-array(list<s64>),\n\n  //   /// SQL: INTEGER, INT, INT4\n  //   int32(s32),\n  //   /// SQL: INTEGER[], INT4[]\n  //   int32-array(list<s32>),\n\n  //   /// SQL: SMALLINT, INT2\n  //   int2(s16),\n  //   /// SQL: SMALLINT[], INT2[]\n  //   int2-array(list<s16>),\n\n  //   /// SQL: DOUBLE PRECISION, FLOAT8\n  //   float8(hashable-f64),\n  //   /// SQL: DOUBLE PRECISION[], FLOAT8[]\n  //   float8-array(list<hashable-f64>),\n\n  //   /// SQL: REAL, FLOAT4\n  //   float4(hashable-f32),\n  //   /// SQL: REAL[], FLOAT4[]\n  //   float4-array(list<hashable-f32>),\n\n  //   /// SQL: BOOLEAN, BOOL\n  //   %bool(bool),\n  //   /// SQL: BOOLEAN[], BOOL[]\n  //   %bool-array(list<bool>),\n\n  //   /// SQL: NUMERIC, DECIMAL\n  //   numeric(numeric),\n  //   /// SQL: NUMERIC[], DECIMAL[]\n  //   numeric-array(list<numeric>),\n\n  //   /// SQL: BIT(n)\n  //   bit(list<u8>),\n  //   /// SQL: BIT(n)[]\n  //   bit-array(list<list<u8>>),\n\n  //   /// SQL: VARBIT(n)\n  //   varbit(list<u8>),\n  //   /// SQL: BIT VARYING[], VARBIT[]\n  //   varbit-array(list<list<u8>>),\n\n  //   /// SQL: BYTEA\n  //   bytea(list<u8>),\n  //   /// SQL: BYTEA[]\n  //   bytea-array(list<list<u8>>),\n\n  //   /// SQL: CHAR(n), CHARACTER(n)\n  //   %char(string),\n  //   /// SQL: CHAR(n)[]\n  //   %char-array(list<string>),\n\n  //   /// SQL: VARCHAR(n), CHARACTER VARYING(n)\n  //   varchar(string),\n  //   /// SQL: VARCHAR(n)[]\n  //   varchar-array(list<string>),\n\n  //   // Networking\n  //   /// SQL: CIDR\n  //   cidr(string),\n  //   /// SQL: CIDR[]\n  //   cidr-array(list<string>),\n\n  //   /// SQL: INET\n  //   inet(string),\n  //   /// SQL: INET[]\n  //   inet-array(list<string>),\n\n  //   /// SQL: MACADDR (EUI-48)\n  //   macaddr(mac-address-eui48),\n  //   /// SQL: MACADDR[]\n  //   macaddr-array(list<mac-address-eui48>),\n\n  //   /// SQL: MACADDR8 (EUI-64, deprecated)\n  //   macaddr8(mac-address-eui64),\n  //   /// SQL: MACADDR8[]\n  //   macaddr8-array(list<mac-address-eui64>),\n\n  //   // Date-time\n  //   /// SQL: DATE\n  //   date(date),\n  //   /// SQL: DATE[]\n  //   date-array(list<date>),\n\n  //   /// SQL: INTERVAL\n  //   interval(interval),\n  //   /// SQL: INTERVAL[]\n  //   interval-array(list<interval>),\n\n  //   /// SQL: TIME WITHOUT TIME ZONE\n  //   time(time),\n  //   /// SQL: TIME[]\n  //   time-array(list<time>),\n\n  //   /// SQL: TIME WITH TIME ZONE\n  //   time-tz(time-tz),\n  //   /// SQL: TIMETZ[]\n  //   time-tz-array(list<time-tz>),\n\n  //   /// SQL: TIMESTAMP WITHOUT TIME ZONE\n  //   timestamp(timestamp),\n  //   /// SQL: TIMESTAMP[]\n  //   timestamp-array(list<timestamp>),\n\n  //   /// SQL: TIMESTAMP WITH TIME ZONE, TIMESTAMPTZ\n  //   timestamp-tz(timestamp-tz),\n  //   /// SQL: TIMESTAMPTZ[]\n  //   timestamp-tz-array(list<timestamp-tz>),\n\n  //   // JSON\n  //   /// SQL: JSON\n  //   json(string),\n  //   /// SQL: JSON[]\n  //   json-array(list<string>),\n\n  //   /// SQL: JSONB\n  //   jsonb(string),\n  //   /// SQL: JSONB[]\n  //   jsonb-array(list<string>),\n\n  //   /// SQL: MONEY (internal fixed-point type)\n  //   money(numeric),\n  //   /// SQL: MONEY[]\n  //   money-array(list<numeric>),\n\n  //   // Text\n  //   /// SQL: NAME (system identifier type)\n  //   name(string),\n  //   /// SQL: NAME[]\n  //   name-array(list<string>),\n\n  //   /// SQL: TEXT\n  //   text(string),\n  //   /// SQL: TEXT[]\n  //   text-array(list<string>),\n\n  //   /// SQL: XML\n  //   xml(string),\n  //   /// SQL: XML[]\n  //   xml-array(list<string>),\n\n  //   // UUIDs\n  //   /// SQL: UUID\n  //   uuid(string),\n  //   /// SQL: UUID[]\n  //   uuid-array(list<string>),\n\n  //   // Containers\n  //   /// SQL: HSTORE (extension)\n  //   hstore(list<tuple<string, option<string>>>),\n  // }\n}";
     const _: &[u8] = b"package wasmledger:sql-postgres;\n\ninterface postgres-codecs-ext {\n  use wasmledger:sql/query-types.{sql-arguments, query-results};\n  use wasmledger:sql/util-types.{error};\n  use wasmledger:sql/codecs.{push-result, value-position};\n\n  type hstore = list<tuple<string, option<string>>>;\n\n  push-hstore: func(value: option<hstore>, to: borrow<sql-arguments>) -> push-result;\n  get-hstore: func(%result: borrow<query-results>, position: value-position) -> result<option<hstore>, error>;\n}";
     const _: &[u8] = b"package wasmledger:module;\n\ninterface migrations {\n  use wasmledger:sql/query.{query-executor};\n  use wasmledger:sql/util-types.{error};\n\n  type migration-id = string;\n\n  variant schema-error {\n    schema-invalid(string),\n    sql(error)\n  }\n\n  get-module-id: func() -> string;\n\n  list-migrations: async func() -> list<migration-id>;\n  apply-migration: async func(id: migration-id, executor: query-executor) -> result<_, error>;\n\n  check-schema: async func(executor: query-executor) -> result<_, schema-error>;\n}";
@@ -497,25 +497,25 @@ mod bindings {
             }
         }
         #[unsafe(
-            export_name = "[async-lift]wasmledger:module/migrations#[async]list-migrations"
+            export_name = "[async-lift]wasmledger:module/migrations#list-migrations"
         )]
-        unsafe extern "C" fn export_async_list_migrations() -> i32 {
+        unsafe extern "C" fn export_list_migrations() -> i32 {
             unsafe {
-                self::exports::wasmledger::module::migrations::_export_async_list_migrations_cabi::<
+                self::exports::wasmledger::module::migrations::_export_list_migrations_cabi::<
                     BindingsImpl,
                 >()
             }
         }
         #[unsafe(
-            export_name = "[callback][async-lift]wasmledger:module/migrations#[async]list-migrations"
+            export_name = "[callback][async-lift]wasmledger:module/migrations#list-migrations"
         )]
-        unsafe extern "C" fn _callback_async_list_migrations(
+        unsafe extern "C" fn _callback_list_migrations(
             event0: u32,
             event1: u32,
             event2: u32,
         ) -> u32 {
             unsafe {
-                self::exports::wasmledger::module::migrations::__callback_async_list_migrations(
+                self::exports::wasmledger::module::migrations::__callback_list_migrations(
                     event0,
                     event1,
                     event2,
@@ -523,56 +523,54 @@ mod bindings {
             }
         }
         #[unsafe(
-            export_name = "[async-lift]wasmledger:module/migrations#[async]apply-migration"
+            export_name = "[async-lift]wasmledger:module/migrations#apply-migration"
         )]
-        unsafe extern "C" fn export_async_apply_migration(
+        unsafe extern "C" fn export_apply_migration(
             arg0: *mut u8,
             arg1: usize,
             arg2: i32,
             arg3: i32,
         ) -> i32 {
             unsafe {
-                self::exports::wasmledger::module::migrations::_export_async_apply_migration_cabi::<
+                self::exports::wasmledger::module::migrations::_export_apply_migration_cabi::<
                     BindingsImpl,
                 >(arg0, arg1, arg2, arg3)
             }
         }
         #[unsafe(
-            export_name = "[callback][async-lift]wasmledger:module/migrations#[async]apply-migration"
+            export_name = "[callback][async-lift]wasmledger:module/migrations#apply-migration"
         )]
-        unsafe extern "C" fn _callback_async_apply_migration(
+        unsafe extern "C" fn _callback_apply_migration(
             event0: u32,
             event1: u32,
             event2: u32,
         ) -> u32 {
             unsafe {
-                self::exports::wasmledger::module::migrations::__callback_async_apply_migration(
+                self::exports::wasmledger::module::migrations::__callback_apply_migration(
                     event0,
                     event1,
                     event2,
                 )
             }
         }
-        #[unsafe(
-            export_name = "[async-lift]wasmledger:module/migrations#[async]check-schema"
-        )]
-        unsafe extern "C" fn export_async_check_schema(arg0: i32, arg1: i32) -> i32 {
+        #[unsafe(export_name = "[async-lift]wasmledger:module/migrations#check-schema")]
+        unsafe extern "C" fn export_check_schema(arg0: i32, arg1: i32) -> i32 {
             unsafe {
-                self::exports::wasmledger::module::migrations::_export_async_check_schema_cabi::<
+                self::exports::wasmledger::module::migrations::_export_check_schema_cabi::<
                     BindingsImpl,
                 >(arg0, arg1)
             }
         }
         #[unsafe(
-            export_name = "[callback][async-lift]wasmledger:module/migrations#[async]check-schema"
+            export_name = "[callback][async-lift]wasmledger:module/migrations#check-schema"
         )]
-        unsafe extern "C" fn _callback_async_check_schema(
+        unsafe extern "C" fn _callback_check_schema(
             event0: u32,
             event1: u32,
             event2: u32,
         ) -> u32 {
             unsafe {
-                self::exports::wasmledger::module::migrations::__callback_async_check_schema(
+                self::exports::wasmledger::module::migrations::__callback_check_schema(
                     event0,
                     event1,
                     event2,

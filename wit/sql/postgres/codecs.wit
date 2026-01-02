@@ -34,6 +34,11 @@ interface postgres-codecs {
   push-uuid: func(value: option<uuid>, to: borrow<sql-arguments>) -> push-result;
   get-uuid: func(%result: borrow<query-results>, position: value-position) -> result<option<uuid>, error>;
 
+  type hstore = list<tuple<string, option<string>>>;
+
+  push-hstore: func(value: option<hstore>, to: borrow<sql-arguments>) -> push-result;
+  get-hstore: func(%result: borrow<query-results>, position: value-position) -> result<option<hstore>, error>;
+
 
   // variant pg-value {
   //   /// SQL: NULL

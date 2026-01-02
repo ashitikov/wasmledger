@@ -1,0 +1,12 @@
+[package]
+name = "wasmledger-host"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+wasmledger-sql = { workspace = true, features = ["postgres"] }
+wit-bindgen = { workspace = true }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0.228", features = ["derive"] }
+axum = "0.8.8"
+wasmtime = "40.0.0"

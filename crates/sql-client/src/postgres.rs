@@ -7,7 +7,6 @@ pub mod bindings {
           "wasmledger:sql/util-types": crate::base::bindings::wasmledger::sql::util_types,
           "wasmledger:sql/codecs": crate::base::bindings::wasmledger::sql::codecs,
           "wasmledger:sql-postgres/postgres-codecs": generate,
-          "wasmledger:sql-postgres/postgres-codecs-ext": generate
         }
     });
 }

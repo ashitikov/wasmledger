@@ -3,9 +3,6 @@ package wasmledger:sql;
 /// Types used by components and providers of a sql
 interface util-types {
   variant error {
-    /// no rows returned by a query that expected to return at least one row.
-    row-not-found,
-
     /// error occurred while encoding a value
     encode(string),
 
@@ -20,6 +17,9 @@ interface util-types {
 
     /// got unexpected connection status after attempting to begin transaction
     begin-failed,
+
+    /// attempted to perform operation on already closed transaction
+    transaction-closed,
 
     /// generic unexpected error
     unexpected(string)

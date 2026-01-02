@@ -1,107 +1,201 @@
 use crate::{
-    core::bindings::{
-        exports::wasmledger::sql::{query::QueryResults, query_types::SqlArguments},
-        wasmledger::sql::util_types::Error,
+    core::bindings::wasmledger::sql::{
+        query::QueryResults, query_types::SqlArguments, util_types::Error,
     },
     postgres::bindings::{
-        BindingsImpl,
-        exports::wasmledger::sql_postgres::postgres_codecs::Uuid,
-        utils::CodecsUtils,
-        wasmledger::sql::codecs::{PushResult, ValuePosition},
+        BindingsImplState,
+        utils::{self},
+        wasmledger::{
+            sql::codecs::{PushResult, ValuePosition},
+            sql_postgres::postgres_codecs::{Hstore, Uuid},
+        },
     },
 };
-use sqlx::types::Json;
 use sqlx::types::JsonRawValue;
+use sqlx::{postgres::types::PgHstore, types::Json};
 
-impl crate::postgres::bindings::exports::wasmledger::sql_postgres::postgres_codecs::Guest
-    for BindingsImpl
+impl crate::postgres::bindings::wasmledger::sql_postgres::postgres_codecs::Host
+    for BindingsImplState
 {
-    fn push_int16(value: Option<i16>, to: &SqlArguments) -> PushResult {
-        CodecsUtils::encode(value, to)
+    fn push_int16(
+        &mut self,
+        value: Option<i16>,
+        to: wasmtime::component::Resource<SqlArguments>,
+    ) -> PushResult {
+        utils::encode(value, self.table.get(&to)?)
     }
 
-    fn push_int32(value: Option<i32>, to: &SqlArguments) -> PushResult {
-        CodecsUtils::encode(value, to)
+    fn get_int16(
+        &mut self,
+        result: wasmtime::component::Resource<QueryResults>,
+        position: ValuePosition,
+    ) -> Result<Option<i16>, Error> {
+        utils::decode(self.table.get(&result)?, position)
     }
 
-    fn push_int64(value: Option<i64>, to: &SqlArguments) -> PushResult {
-        CodecsUtils::encode(value, to)
+    fn push_int32(
+        &mut self,
+        value: Option<i32>,
+        to: wasmtime::component::Resource<SqlArguments>,
+    ) -> PushResult {
+        utils::encode(value, self.table.get(&to)?)
     }
 
-    fn push_string(value: Option<String>, to: &SqlArguments) -> PushResult {
-        CodecsUtils::encode(value, to)
+    fn get_int32(
+        &mut self,
+        result: wasmtime::component::Resource<QueryResults>,
+        position: ValuePosition,
+    ) -> Result<Option<i32>, Error> {
+        utils::decode(self.table.get(&result)?, position)
     }
 
-    fn push_json(value: Option<String>, to: &SqlArguments) -> PushResult {
+    fn push_int64(
+        &mut self,
+        value: Option<i64>,
+        to: wasmtime::component::Resource<SqlArguments>,
+    ) -> PushResult {
+        utils::encode(value, self.table.get(&to)?)
+    }
+
+    fn get_int64(
+        &mut self,
+        result: wasmtime::component::Resource<QueryResults>,
+        position: ValuePosition,
+    ) -> Result<Option<i64>, Error> {
+        utils::decode(self.table.get(&result)?, position)
+    }
+
+    fn push_float32(
+        &mut self,
+        value: Option<f32>,
+        to: wasmtime::component::Resource<SqlArguments>,
+    ) -> PushResult {
+        utils::encode(value, self.table.get(&to)?)
+    }
+
+    fn get_float32(
+        &mut self,
+        result: wasmtime::component::Resource<QueryResults>,
+        position: ValuePosition,
+    ) -> Result<Option<f32>, Error> {
+        utils::decode(self.table.get(&result)?, position)
+    }
+
+    fn push_float64(
+        &mut self,
+        value: Option<f64>,
+        to: wasmtime::component::Resource<SqlArguments>,
+    ) -> PushResult {
+        utils::encode(value, self.table.get(&to)?)
+    }
+
+    fn get_float64(
+        &mut self,
+        result: wasmtime::component::Resource<QueryResults>,
+        position: ValuePosition,
+    ) -> Result<Option<f64>, Error> {
+        utils::decode(self.table.get(&result)?, position)
+    }
+
+    fn push_string(
+        &mut self,
+        value: Option<wasmtime::component::__internal::String>,
+        to: wasmtime::component::Resource<SqlArguments>,
+    ) -> PushResult {
+        utils::encode(value, self.table.get(&to)?)
+    }
+
+    fn get_string(
+        &mut self,
+        result: wasmtime::component::Resource<QueryResults>,
+        position: ValuePosition,
+    ) -> Result<Option<wasmtime::component::__internal::String>, Error> {
+        utils::decode(self.table.get(&result)?, position)
+    }
+
+    fn push_bool(
+        &mut self,
+        value: Option<bool>,
+        to: wasmtime::component::Resource<SqlArguments>,
+    ) -> PushResult {
+        utils::encode(value, self.table.get(&to)?)
+    }
+
+    fn get_bool(
+        &mut self,
+        result: wasmtime::component::Resource<QueryResults>,
+        position: ValuePosition,
+    ) -> Result<Option<bool>, Error> {
+        utils::decode(self.table.get(&result)?, position)
+    }
+
+    fn push_json(
+        &mut self,
+        value: Option<wasmtime::component::__internal::String>,
+        to: wasmtime::component::Resource<SqlArguments>,
+    ) -> PushResult {
+        let to = self.table.get(&to)?;
         match value {
             Some(value) => {
                 let raw_value =
                     JsonRawValue::from_string(value).map_err(|e| Error::Encode(e.to_string()))?;
 
-                CodecsUtils::encode(Json(raw_value), to)
+                utils::encode(Json(raw_value), to)
             }
-            None => CodecsUtils::encode(value, to),
+            None => utils::encode(value, to),
         }
     }
 
-    fn get_int16(result: &QueryResults, position: ValuePosition) -> Result<Option<i16>, Error> {
-        CodecsUtils::decode(result, position)
-    }
-
-    fn get_int32(result: &QueryResults, position: ValuePosition) -> Result<Option<i32>, Error> {
-        CodecsUtils::decode(result, position)
-    }
-
-    fn get_int64(result: &QueryResults, position: ValuePosition) -> Result<Option<i64>, Error> {
-        CodecsUtils::decode(result, position)
-    }
-
-    fn get_string(result: &QueryResults, position: ValuePosition) -> Result<Option<String>, Error> {
-        CodecsUtils::decode(result, position)
-    }
-
-    fn get_json(result: &QueryResults, position: ValuePosition) -> Result<Option<String>, Error> {
-        let a = CodecsUtils::decode::<Option<&JsonRawValue>>(result, position)?;
+    fn get_json(
+        &mut self,
+        result: wasmtime::component::Resource<QueryResults>,
+        position: ValuePosition,
+    ) -> Result<Option<wasmtime::component::__internal::String>, Error> {
+        let a = utils::decode::<Option<&JsonRawValue>>(self.table.get(&result)?, position)?;
 
         Ok(a.map(|x| x.get().to_string()))
     }
 
-    fn push_bool(value: Option<bool>, to: &SqlArguments) -> PushResult {
-        CodecsUtils::encode(value, to)
-    }
-
-    fn get_bool(result: &QueryResults, position: ValuePosition) -> Result<Option<bool>, Error> {
-        CodecsUtils::decode(result, position)
-    }
-
-    fn push_float32(value: Option<f32>, to: &SqlArguments) -> PushResult {
-        CodecsUtils::encode(value, to)
-    }
-
-    fn get_float32(result: &QueryResults, position: ValuePosition) -> Result<Option<f32>, Error> {
-        CodecsUtils::decode(result, position)
-    }
-
-    fn push_float64(value: Option<f64>, to: &SqlArguments) -> PushResult {
-        CodecsUtils::encode(value, to)
-    }
-
-    fn get_float64(result: &QueryResults, position: ValuePosition) -> Result<Option<f64>, Error> {
-        CodecsUtils::decode(result, position)
-    }
-
-    fn push_uuid(value: Option<Uuid>, to: &SqlArguments) -> PushResult {
+    fn push_uuid(
+        &mut self,
+        value: Option<Uuid>,
+        to: wasmtime::component::Resource<SqlArguments>,
+    ) -> PushResult {
         let value = value
             .map(|v| sqlx::types::Uuid::try_parse(v.as_str()))
             .transpose()
             .map_err(|e| Error::Encode(e.to_string()))?;
 
-        CodecsUtils::encode(value, to)
+        utils::encode(value, self.table.get(&to)?)
     }
 
-    fn get_uuid(result: &QueryResults, position: ValuePosition) -> Result<Option<Uuid>, Error> {
-        let value: Option<Uuid> = CodecsUtils::decode(result, position)?;
+    fn get_uuid(
+        &mut self,
+        result: wasmtime::component::Resource<QueryResults>,
+        position: ValuePosition,
+    ) -> Result<Option<Uuid>, Error> {
+        let value: Option<Uuid> = utils::decode(self.table.get(&result)?, position)?;
 
         Ok(value.map(|v| v.to_string()))
+    }
+
+    fn push_hstore(
+        &mut self,
+        value: Option<Hstore>,
+        to: wasmtime::component::Resource<SqlArguments>,
+    ) -> PushResult {
+        let value = value.map(|v: Vec<(String, Option<String>)>| PgHstore(v.into_iter().collect()));
+
+        utils::encode(value, self.table.get(&to)?)
+    }
+
+    fn get_hstore(
+        &mut self,
+        result: wasmtime::component::Resource<QueryResults>,
+        position: ValuePosition,
+    ) -> Result<Option<Hstore>, Error> {
+        let value: Option<PgHstore> = utils::decode(self.table.get(&result)?, position)?;
+
+        Ok(value.map(|v| v.into_iter().collect()))
     }
 }

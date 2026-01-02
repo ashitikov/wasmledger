@@ -3,8 +3,10 @@ package wasmledger:sql;
 interface pool {
   use util-types.{error};
   use transaction.{transaction};
+  use connection.{connection};
 
   begin-transaction: async func() -> result<transaction, error>;
+  acquire-connection: async func() -> result<connection, error>;
 }
 
 interface transaction {
@@ -13,5 +15,14 @@ interface transaction {
   resource transaction {
     commit: static async func(this: transaction) -> result<_, error>;
     rollback: static async func(this: transaction) -> result<_, error>;
+  }
+}
+
+interface connection {
+  use util-types.{error};
+  use transaction.{transaction};
+
+  resource connection {
+    begin-transaction: async func() -> result<transaction, error>;
   }
 }

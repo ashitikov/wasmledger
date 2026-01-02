@@ -1,6 +1,5 @@
-package wasmledger:sql-postgres-codecs;
+package wasmledger:sql-host-postgres-codecs;
 
 world codecs-postgres {
-  export wasmledger:sql-postgres/postgres-codecs;
-  export wasmledger:sql-postgres/postgres-codecs-ext;
+  import wasmledger:sql-postgres/postgres-codecs;
 }
