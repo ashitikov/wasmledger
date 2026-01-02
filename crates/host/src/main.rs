@@ -1,3 +1,4 @@
+use anyhow::Ok;
 use axum::{
     Json, Router,
     http::StatusCode,
@@ -5,39 +6,24 @@ use axum::{
     routing::{get, post},
 };
 use serde::{Deserialize, Serialize};
-use wasmledger_sql::sqldb::{SqlDB, SqlDatabasePoolOption};
+use std::{env, str::FromStr};
+use wasmledger_sql::sqldb::{
+    SqlDB,
+    sqlx::{self, ConnectOptions},
+};
 use wasmtime::{Engine, Store, component::Linker};
 
-struct GlobalComponentState {
-    sql: wasmledger_sql::CoreComponentState,
-}
+use crate::engine::create_wasm_engine;
 
-async fn setup_engine() {
-    let engine = Engine::default();
-
-    let pool_options = SqlDatabasePoolOption::default();
-    let pool = pool_options.connect("").await.unwrap();
-
-    let mut linker = Linker::new(&engine);
-    let mut store = Store::new(
-        &engine,
-        GlobalComponentState {
-            sql: wasmledger_sql::CoreComponentState::new(SqlDB::new(pool)),
-        },
-    );
-
-    let _ = wasmledger_sql::CoreHost::add_to_linker::<
-        GlobalComponentState,
-        wasmledger_sql::CoreComponentState,
-    >(&mut linker, |s| &mut s.sql);
-}
+mod capabilities;
+mod engine;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     // initialize tracing
     // tracing_subscriber::fmt::init();
 
-    setup_engine().await;
+    let _engine = create_wasm_engine().await?;
 
     // build our application with a route
     let app = Router::new()
@@ -52,6 +38,8 @@ async fn main() {
         .unwrap();
     // tracing::debug!("listening on {}", listener.local_addr().unwrap());
     let _ = axum::serve(listener, app).await;
+
+    Ok(())
 }
 
 // basic handler that responds with a static string
