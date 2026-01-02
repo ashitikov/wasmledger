@@ -2,6 +2,7 @@ package wasmledger:sql-client;
 
 world client-base {
   import wasmledger:sql/pool;
+  import wasmledger:sql/connection;
   import wasmledger:sql/transaction;
   import wasmledger:sql/query;
   import wasmledger:sql/query-types;

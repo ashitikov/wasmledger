@@ -2,7 +2,7 @@ use std::{collections::HashMap, sync::LazyLock};
 
 use wasmledger_migrations_macro::load_migrations;
 use wasmledger_sql_client::base::bindings::wasmledger::sql::{
-    query::QueryExecutor, query_types::SqlString
+    query::QueryExecutor, query_types::SqlString,
 };
 use wasmledger_utils::{
     impl_expectation_to_schema_error, impl_migrations_guest_partially, impl_sql_to_schema_error,
