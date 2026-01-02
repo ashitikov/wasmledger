@@ -26,7 +26,10 @@ async fn setup_engine() {
         },
     );
 
-    wasmledger_sql::CoreHost::add_to_linker(&mut linker, |s: &mut GlobalComponentState| s.sql)?;
+    let _ = wasmledger_sql::CoreHost::add_to_linker::<
+        GlobalComponentState,
+        wasmledger_sql::CoreComponentState,
+    >(&mut linker, |s| &mut s.sql);
 }
 
 #[tokio::main]

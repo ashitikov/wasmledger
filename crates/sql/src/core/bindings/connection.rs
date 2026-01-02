@@ -22,6 +22,19 @@ pub struct ConnectionImpl {
     pub(crate) connection: Arc<RwLock<PoolConnection<SqlDatabase>>>,
 }
 
+impl crate::core::bindings::wasmledger::sql::connection::Host for BindingsImplState {}
+
+impl crate::core::bindings::wasmledger::sql::connection::HostConnection for BindingsImplState {
+    async fn drop(
+        &mut self,
+        rep: wasmtime::component::Resource<Connection>,
+    ) -> wasmtime::Result<()> {
+        self.table.delete(rep)?;
+
+        Ok(())
+    }
+}
+
 impl crate::core::bindings::wasmledger::sql::connection::HostConnectionWithStore
     for BindingsImplState
 {

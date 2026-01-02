@@ -41,6 +41,8 @@ impl HasData for BindingsImplState {
         Self: 'a;
 }
 
+impl crate::core::bindings::wasmledger::sql::util_types::Host for BindingsImplState {}
+
 pub(crate) mod connection;
 pub(crate) mod error;
 pub(crate) mod executor;

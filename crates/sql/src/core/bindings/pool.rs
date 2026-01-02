@@ -9,6 +9,8 @@ use crate::core::bindings::{
     wasmledger::sql::{pool::Connection, transaction::Transaction, util_types::Error},
 };
 
+impl crate::core::bindings::wasmledger::sql::pool::Host for BindingsImplState {}
+
 impl crate::core::bindings::wasmledger::sql::pool::HostWithStore for BindingsImplState {
     async fn begin_transaction<T>(
         accessor: &wasmtime::component::Accessor<T, Self>,

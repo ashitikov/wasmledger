@@ -224,6 +224,8 @@ impl crate::core::bindings::wasmledger::sql::transaction::HostTransaction for Bi
     }
 }
 
+impl crate::core::bindings::wasmledger::sql::transaction::Host for BindingsImplState {}
+
 impl crate::core::bindings::wasmledger::sql::transaction::HostTransactionWithStore
     for BindingsImplState
 {

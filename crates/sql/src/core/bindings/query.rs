@@ -7,6 +7,9 @@ use crate::core::bindings::wasmledger::sql::query::QueryExecutor;
 use crate::core::bindings::wasmledger::sql::query_types::{QueryResults, SqlQuery, SqlString};
 use crate::core::bindings::wasmledger::sql::util_types::Error;
 
+impl crate::core::bindings::wasmledger::sql::query::Host for BindingsImplState {}
+impl crate::core::bindings::wasmledger::sql::query_types::Host for BindingsImplState {}
+
 impl crate::core::bindings::wasmledger::sql::query::HostWithStore for BindingsImplState {
     async fn fetch_all<T>(
         accessor: &wasmtime::component::Accessor<T, Self>,
