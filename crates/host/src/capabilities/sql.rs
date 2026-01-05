@@ -1,11 +1,11 @@
 use std::{env, str::FromStr};
 
 use wasmledger_sql::{
-    CoreComponentState,
+    core::bindings::BindingsImplState,
     sqldb::{SqlDB, sqlx},
 };
 
-pub(crate) async fn create_sql_state() -> anyhow::Result<CoreComponentState> {
+pub(crate) async fn create_sql_state() -> anyhow::Result<BindingsImplState> {
     let pool_options = sqlx::postgres::PgPoolOptions::default();
     let connect_options = {
         let env_pgurl = env::var("PGURL");
@@ -20,5 +20,5 @@ pub(crate) async fn create_sql_state() -> anyhow::Result<CoreComponentState> {
 
     let pool = pool_options.connect_with(connect_options).await?;
 
-    Ok(CoreComponentState::new(SqlDB::new(pool)))
+    Ok(BindingsImplState::new(SqlDB::new(pool)))
 }

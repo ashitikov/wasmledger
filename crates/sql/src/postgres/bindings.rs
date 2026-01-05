@@ -6,7 +6,7 @@ wasmtime::component::bindgen!({
     with: {
       "wasmledger:sql/query-types": crate::core::bindings::wasmledger::sql::query_types,
       "wasmledger:sql/util-types": crate::core::bindings::wasmledger::sql::util_types,
-    },
+    }
 });
 
 #[derive(Default)]

@@ -4,7 +4,7 @@ use crate::capabilities::sql::create_sql_state;
 
 /// Global component state shared across WASM component instances
 pub struct GlobalComponentState {
-    pub sql: wasmledger_sql::CoreComponentState,
+    pub sql: wasmledger_sql::core::bindings::BindingsImplState,
 }
 
 /// Create a configured Wasmtime engine with component model support

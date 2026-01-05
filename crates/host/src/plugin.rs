@@ -2,6 +2,7 @@ use std::sync::Arc;
 use wasmtime::component::Component;
 
 pub mod registry;
+pub mod migrations;
 
 /// A plugin that has been loaded and compiled, ready for instantiation
 pub struct LoadedPlugin {

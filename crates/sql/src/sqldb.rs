@@ -1,4 +1,4 @@
-use sqlx::{ConnectOptions, Pool};
+use sqlx::{Pool};
 
 #[cfg(feature = "postgres")]
 pub(crate) type SqlDatabase = sqlx::Postgres;
