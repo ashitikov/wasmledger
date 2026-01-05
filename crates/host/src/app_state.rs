@@ -1,10 +1,7 @@
 use std::sync::Arc;
 use wasmtime::Engine;
 
-use crate::{
-    engine::create_engine,
-    plugin_registry::{HostConfig, PluginRegistry},
-};
+use crate::{config::HostConfig, engine::create_engine, plugin::registry::PluginRegistry};
 
 /// Shared application state
 #[derive(Clone)]
@@ -28,11 +25,8 @@ impl AppState {
         let config = Arc::new(HostConfig::load()?);
 
         // Load all plugins from configuration
-        let plugin_registry = PluginRegistry::load_from_config(
-            engine.clone(),
-            config.clone(),
-        )
-        .await?;
+        let plugin_registry =
+            PluginRegistry::load_from_config(engine.clone(), config.clone()).await?;
 
         Ok(Self {
             engine,

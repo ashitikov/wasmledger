@@ -1,15 +1,8 @@
+use serde::Deserialize;
 use std::path::PathBuf;
 use std::time::Duration;
-use serde::Deserialize;
 
-/// Single plugin entry in configuration
-#[derive(Debug, Clone, Deserialize)]
-pub struct PluginEntry {
-    /// Plugin identifier (e.g., "money", "core", "my-custom-plugin")
-    pub id: String,
-    /// Path to the .wasm file
-    pub path: PathBuf,
-}
+use crate::plugin::registry::PluginEntry;
 
 /// Configuration for function execution (limits and timeouts)
 #[derive(Debug, Clone, Deserialize)]
@@ -71,8 +64,8 @@ impl HostConfig {
     /// Reads from `config.yaml` in the current directory by default,
     /// or from the path specified in the `CONFIG_PATH` environment variable.
     pub fn load() -> anyhow::Result<Self> {
-        let config_path = std::env::var("CONFIG_PATH")
-            .unwrap_or_else(|_| "config.yaml".to_string());
+        let config_path =
+            std::env::var("CONFIG_PATH").unwrap_or_else(|_| "config.yaml".to_string());
 
         // Check if config file exists
         let path = PathBuf::from(&config_path);

@@ -1,6 +1,8 @@
 use std::sync::Arc;
 use wasmtime::component::Component;
 
+pub mod registry;
+
 /// A plugin that has been loaded and compiled, ready for instantiation
 pub struct LoadedPlugin {
     /// Plugin identifier from config (e.g., "money", "core", "my-custom-plugin")

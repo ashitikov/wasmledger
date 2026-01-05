@@ -1,0 +1,5 @@
+package wasmledger:plugin-client;
+
+world client {
+  export wasmledger:plugin/migrations;
+}

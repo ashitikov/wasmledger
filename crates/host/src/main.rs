@@ -5,11 +5,12 @@ use axum::{
 };
 
 mod api;
+mod config;
 mod app_state;
 mod capabilities;
 mod engine;
 mod execution;
-mod plugin_registry;
+mod plugin;
 
 use crate::{
     app_state::AppState,

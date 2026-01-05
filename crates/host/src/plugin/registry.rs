@@ -1,11 +1,19 @@
-use std::collections::HashMap;
+use serde::Deserialize;
 use std::sync::Arc;
+use std::{collections::HashMap, path::PathBuf};
 use wasmtime::{Engine, component::Component};
 
-use super::{
-    config::{HostConfig, PluginEntry},
-    plugin::LoadedPlugin,
-};
+use crate::config::HostConfig;
+use crate::plugin::LoadedPlugin;
+
+/// Single plugin entry in configuration
+#[derive(Debug, Clone, Deserialize)]
+pub struct PluginEntry {
+    /// Plugin identifier (e.g., "money", "core", "my-custom-plugin")
+    pub id: String,
+    /// Path to the .wasm file
+    pub path: PathBuf,
+}
 
 /// Registry of all loaded plugins
 ///
@@ -24,7 +32,10 @@ impl PluginRegistry {
     ///
     /// This reads .wasm files from disk, compiles them into Components,
     /// and stores them in the registry for future instantiation.
-    pub async fn load_from_config(engine: Engine, config: Arc<HostConfig>) -> anyhow::Result<Arc<Self>> {
+    pub async fn load_from_config(
+        engine: Engine,
+        config: Arc<HostConfig>,
+    ) -> anyhow::Result<Arc<Self>> {
         let mut registry = Self {
             plugins: HashMap::new(),
             engine: engine.clone(),

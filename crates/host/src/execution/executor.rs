@@ -6,7 +6,7 @@ use crate::{
     app_state::AppState,
     engine::create_store_state,
     capabilities,
-    plugin_registry::ExecutionConfig,
+    config::ExecutionConfig,
 };
 
 use super::error::ExecutionError;
