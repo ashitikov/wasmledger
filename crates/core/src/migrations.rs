@@ -11,15 +11,15 @@ use wasmledger_utils::{
 
 use crate::{
     BindingsImpl,
-    bindings::exports::wasmledger::module::migrations::{Error, MigrationId, SchemaError},
+    bindings::exports::wasmledger::plugin::migrations::{Error, MigrationId, SchemaError},
 };
 
-use crate::bindings::exports::wasmledger::module as module_bindings;
+use crate::bindings::exports::wasmledger::plugin as module_bindings;
 
 static MIGRATIONS: LazyLock<(Vec<MigrationId>, HashMap<MigrationId, SqlString>)> =
     LazyLock::new(|| load_migrations!("./src/migrations"));
 
-impl crate::bindings::exports::wasmledger::module::migrations::Guest for BindingsImpl {
+impl crate::bindings::exports::wasmledger::plugin::migrations::Guest for BindingsImpl {
     impl_migrations_guest_partially!(module_bindings, "wasmledger_core", MIGRATIONS);
 
     async fn check_schema(executor: QueryExecutor<'_>) -> Result<(), SchemaError> {

@@ -128,9 +128,9 @@ macro_rules! impl_sql_to_schema_error {
 
 #[macro_export]
 macro_rules! impl_migrations_guest_partially {
-    ($bindings:ident, $module_id:expr, $migrations:ident) => {
-        fn get_module_id() -> String {
-            $module_id.to_string()
+    ($bindings:ident, $migration_group:expr, $migrations:ident) => {
+        fn get_migration_group() -> String {
+            $migration_group.to_string()
         }
 
         async fn list_migrations() -> Vec<$bindings::migrations::MigrationId> {

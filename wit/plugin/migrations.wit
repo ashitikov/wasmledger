@@ -1,4 +1,4 @@
-package wasmledger:module;
+package wasmledger:plugin;
 
 interface migrations {
   use wasmledger:sql/query.{query-executor};
@@ -11,7 +11,7 @@ interface migrations {
     sql(error)
   }
 
-  get-module-id: func() -> string;
+  get-migration-group: func() -> string;
 
   list-migrations: async func() -> list<migration-id>;
   apply-migration: async func(id: migration-id, executor: query-executor) -> result<_, error>;
