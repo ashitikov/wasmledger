@@ -15,23 +15,16 @@ pub struct AppState {
 }
 
 impl AppState {
-    /// Create new application state with configured engine and loaded plugins
-    ///
-    /// This is now async because we need to read plugin .wasm files from disk.
-    pub async fn new() -> anyhow::Result<Self> {
+    pub async fn initialize() -> anyhow::Result<Self> {
         let engine = create_engine()?;
 
-        // Load configuration from YAML
-        let config = Arc::new(HostConfig::load()?);
-
-        // Load all plugins from configuration
-        let plugin_registry =
-            PluginRegistry::load_from_config(engine.clone(), config.clone()).await?;
+        let config = HostConfig::load()?;
+        let plugin_registry = PluginRegistry::load_from_config(&engine, &config).await?;
 
         Ok(Self {
             engine,
-            plugin_registry,
-            config,
+            plugin_registry: Arc::new(plugin_registry),
+            config: Arc::new(config),
         })
     }
 }

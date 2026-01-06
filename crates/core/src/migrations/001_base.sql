@@ -25,5 +25,3 @@ CREATE TABLE
     dst_bucket_out_volume BIGINT NULL, -- NULL = ephemeral
     created_at TIMESTAMP NOT NULL DEFAULT now ()
   );
-
-CREATE INDEX idx_transfers_id ON transfers (id);

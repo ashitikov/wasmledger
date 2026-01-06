@@ -1,9 +1,9 @@
 use crate::{
-    core::bindings::wasmledger::sql::{
-        query::QueryResults, query_types::SqlArguments, util_types::Error,
+    core::bindings::{
+        BindingsImplState,
+        wasmledger::sql::{query::QueryResults, query_types::SqlArguments, util_types::Error},
     },
     postgres::bindings::{
-        BindingsImplState,
         utils::{self},
         wasmledger::{
             sql::codecs::{PushResult, ValuePosition},

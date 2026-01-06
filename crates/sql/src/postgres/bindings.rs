@@ -1,4 +1,4 @@
-use wasmtime::component::{HasData, ResourceTable};
+use crate::core::bindings::BindingsImplState;
 
 wasmtime::component::bindgen!({
     path: ["../../wit/sql", "../../wit/sql/postgres", "./wit", "./wit/codecs-postgres"],
@@ -9,18 +9,7 @@ wasmtime::component::bindgen!({
     }
 });
 
-#[derive(Default)]
-#[allow(dead_code)]
-pub(crate) struct BindingsImplState {
-    table: ResourceTable,
-}
-
-impl HasData for BindingsImplState {
-    type Data<'a>
-        = &'a mut BindingsImplState
-    where
-        Self: 'a;
-}
+impl crate::postgres::bindings::wasmledger::sql::codecs::Host for BindingsImplState {}
 
 mod codecs;
 mod utils;

@@ -20,7 +20,7 @@ use crate::{
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Initialize application state (now async)
-    let app_state = Arc::new(AppState::new().await?);
+    let app_state = Arc::new(AppState::initialize().await?);
 
     // Log loaded plugins
     let plugin_count = app_state.plugin_registry.count();

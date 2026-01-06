@@ -1,0 +1,33 @@
+# WasmLedger Host Configuration
+#
+# This file configures plugins to load at startup and execution limits.
+# Copy this file to config.yaml and edit as needed.
+
+# Plugins to load at startup
+plugins:
+  # Money plugin - provides money arithmetic operations
+  - id: money
+    path: ../../target/wasm32-wasip2/debug/wasmledger_money.wasm
+
+  # Core plugin - provides migrations and core ledger functionality
+  - id: core
+    path: ../../target/wasm32-wasip2/debug/wasmledger_core.wasm
+
+  # Example: Custom plugin
+  # - id: my-custom-plugin
+  #   path: /path/to/custom/plugin.wasm
+
+# Execution limits for programs
+# All fields are optional and will use defaults if not specified
+execution:
+  # Fuel limit (computational budget)
+  # Default: 1000000000
+  fuel_limit: 1000000000
+
+  # Memory limit in bytes
+  # Default: 104857600 (100 MB)
+  memory_limit_bytes: 104857600
+
+  # Execution timeout in seconds
+  # Default: 30
+  timeout_seconds: 30

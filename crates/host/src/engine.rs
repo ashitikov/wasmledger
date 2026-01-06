@@ -1,10 +1,15 @@
 use wasmtime::{Config, Engine};
+use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiCtxView, WasiView};
 
-use crate::capabilities::sql::create_sql_state;
+use crate::capabilities::{
+    postgres::{PostgresState, create_postgres_state},
+    wasi::{WasiState, create_wasi_state},
+};
 
-/// Global component state shared across WASM component instances
-pub struct GlobalComponentState {
-    pub sql: wasmledger_sql::core::bindings::BindingsImplState,
+/// State holding all host capabilities available to WASM components
+pub struct CoreState {
+    pub postgres: PostgresState,
+    pub wasi: WasiState,
 }
 
 /// Create a configured Wasmtime engine with component model support
@@ -16,6 +21,7 @@ pub fn create_engine() -> anyhow::Result<Engine> {
 
     // Enable async support
     config.async_support(true);
+    config.wasm_component_model_async(true);
 
     // Enable fuel consumption tracking
     config.consume_fuel(true);
@@ -29,8 +35,15 @@ pub fn create_engine() -> anyhow::Result<Engine> {
     Ok(Engine::new(&config)?)
 }
 
-/// Create store state with SQL capability
-pub async fn create_store_state() -> anyhow::Result<GlobalComponentState> {
-    let sql = create_sql_state().await?;
-    Ok(GlobalComponentState { sql })
+pub async fn create_core_state() -> anyhow::Result<CoreState> {
+    let postgres = create_postgres_state().await?;
+    let wasi = create_wasi_state();
+
+    Ok(CoreState { postgres, wasi })
+}
+
+impl WasiView for CoreState {
+    fn ctx(&mut self) -> WasiCtxView<'_> {
+        self.wasi.to_view()
+    }
 }

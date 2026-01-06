@@ -1,8 +1,15 @@
-use std::sync::Arc;
-use wasmtime::component::Component;
+use crate::engine::CoreState;
+use std::{
+    collections::HashSet,
+    sync::{Arc, Mutex},
+};
+use wasmtime::{
+    Store,
+    component::{Component, Instance},
+};
 
+pub mod client;
 pub mod registry;
-pub mod migrations;
 
 /// A plugin that has been loaded and compiled, ready for instantiation
 pub struct LoadedPlugin {
@@ -14,16 +21,19 @@ pub struct LoadedPlugin {
     /// Components are cheap to instantiate but expensive to compile, so we
     /// compile once at startup and instantiate per-request for isolation.
     pub component: Arc<Component>,
-}
 
-impl LoadedPlugin {
-    /// Create a new LoadedPlugin
-    pub fn new(id: String, component: Component) -> Self {
-        Self {
-            id,
-            component: Arc::new(component),
-        }
-    }
+    pub imported_interfaces: HashSet<String>,
+
+    /// Pre-instantiated plugin instance
+    ///
+    /// Plugins are instantiated once at startup and reused throughout the application lifetime.
+    /// This allows plugin interfaces to be called directly without re-instantiation.
+    pub instance: Instance,
+    /// Store for the plugin instance
+    ///
+    /// Each plugin gets its own Store with CapabilitiesState.
+    /// Mutex provides thread-safe interior mutability for the Store, which must be mutable when executing WASM.
+    pub store: Mutex<Store<CoreState>>,
 }
 
 impl std::fmt::Debug for LoadedPlugin {
