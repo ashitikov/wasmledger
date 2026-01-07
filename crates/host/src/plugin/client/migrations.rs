@@ -1,7 +1,9 @@
 use anyhow::{Context, Ok, Result};
+use wasmledger_sql::core::bindings::wasmledger::sql::query::QueryExecutor;
 use wasmtime::component::{Component, Linker};
 
 use crate::{
+    capabilities::postgres::PostgresState,
     engine::CoreState,
     plugin::{LoadedPlugin, client::PluginClient, registry::PluginRegistry},
 };
@@ -34,10 +36,10 @@ impl PluginClient for MigrationsPluginClient {
     fn add_to_linker(linker: &mut Linker<CoreState>) -> anyhow::Result<()> {
         // Use bindgen-generated method to add interface
         // This automatically checks if component exports the expected interface
-        bindings::Client::add_to_linker::<
-            CoreState,
-            wasmledger_sql::core::bindings::BindingsImplState,
-        >(linker, |state: &mut CoreState| &mut state.postgres)
+        bindings::Client::add_to_linker::<CoreState, PostgresState>(
+            linker,
+            |state: &mut CoreState| &mut state.postgres,
+        )
         .context("Component doesn't support migrations interface")?;
 
         Ok(())
@@ -61,15 +63,31 @@ impl MigrationsPluginClient {
                 tracing::info!(plugin = %plugin.id, "Running migrations");
                 let migrator = client.wasmledger_plugin_migrations();
 
-                store
+                let res = store
                     .run_concurrent(async |accessor| -> anyhow::Result<()> {
-                        let migrations = migrator.call_list_migrations(accessor).await?;
-                        let t = format!("migrations {}", migrations.join(","));
-                        tracing::info!(plugin = %plugin.id, t);
+                        // let executor = QueryExecutor::Pool;
+                        // let test = migrator.call_check_schema(accessor, executor).await?;
+                        // match test {
+                        //     std::result::Result::Ok(v) => println!("check schema done"),
+                        //     Err(e) => println!("check schema err {}", e),
+                        // }
+                        // let migrations = migrator.call_list_migrations(accessor).await?;
+                        // println!("Running migrations3");
+                        // let t = format!("migrations {}", migrations.join(","));
+                        // tracing::info!(plugin = %plugin.id, t);
+
+                        // println!("migrations {}", migrations.join(","));
 
                         Ok(())
                     })
                     .await;
+
+                match res {
+                    std::result::Result::Ok(_) => {
+                        todo!()
+                    }
+                    Err(e) => println!("{}", e),
+                }
 
                 tracing::info!(plugin = %plugin.id, "Migrations completed successfully");
             }

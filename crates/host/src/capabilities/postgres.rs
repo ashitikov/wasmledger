@@ -1,5 +1,6 @@
-use std::{env, str::FromStr};
+use std::{env, str::FromStr, sync::Arc};
 
+use tokio::sync::OnceCell;
 use wasmledger_sql::sqldb::{SqlDB, sqlx};
 use wasmtime::component::Linker;
 
@@ -7,22 +8,30 @@ use crate::engine::CoreState;
 
 pub type PostgresState = wasmledger_sql::core::bindings::BindingsImplState;
 
+static DATABASE: OnceCell<Arc<SqlDB>> = OnceCell::const_new();
+
 pub(crate) async fn create_postgres_state() -> anyhow::Result<PostgresState> {
-    let pool_options = sqlx::postgres::PgPoolOptions::default();
-    let connect_options = {
-        let env_pgurl = env::var("PGURL");
-        let opts = match env_pgurl {
-            Ok(url) => sqlx::postgres::PgConnectOptions::from_str(&url)?,
-            Err(env::VarError::NotPresent) => sqlx::postgres::PgConnectOptions::default(),
-            Err(e) => return anyhow::Result::Err(e.into()),
-        };
+    let database = DATABASE
+        .get_or_try_init(async || -> anyhow::Result<Arc<SqlDB>> {
+            let pool_options = sqlx::postgres::PgPoolOptions::default();
+            let connect_options = {
+                let env_pgurl = env::var("PGURL");
+                let opts = match env_pgurl {
+                    Ok(url) => sqlx::postgres::PgConnectOptions::from_str(&url)?,
+                    Err(env::VarError::NotPresent) => sqlx::postgres::PgConnectOptions::default(),
+                    Err(e) => return anyhow::Result::Err(e.into()),
+                };
 
-        opts
-    };
+                opts
+            };
 
-    let pool = pool_options.connect_with(connect_options).await?;
+            let pool = pool_options.connect_with(connect_options).await?;
 
-    Ok(PostgresState::new(SqlDB::new(pool)))
+            Ok(Arc::new(SqlDB::new(pool)))
+        })
+        .await?;
+
+    Ok(PostgresState::new(database.clone()))
 }
 
 pub fn add_to_linker(linker: &mut Linker<CoreState>) -> anyhow::Result<()> {

@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use wasmtime::component::{HasData, ResourceTable};
 
 use crate::sqldb::SqlDB;
@@ -22,11 +24,11 @@ wasmtime::component::bindgen!({
 #[allow(unused)]
 pub struct BindingsImplState {
     pub(crate) table: ResourceTable,
-    pub(crate) sql_db: SqlDB,
+    pub(crate) sql_db: Arc<SqlDB>,
 }
 
 impl BindingsImplState {
-    pub fn new(db: SqlDB) -> Self {
+    pub fn new(db: Arc<SqlDB>) -> Self {
         Self {
             table: ResourceTable::new(),
             sql_db: db,

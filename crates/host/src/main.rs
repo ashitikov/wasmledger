@@ -13,8 +13,7 @@ mod execution;
 mod plugin;
 
 use crate::{
-    app_state::AppState,
-    api::execute_function_handler,
+    api::execute_function_handler, app_state::AppState, plugin::client::migrations::MigrationsPluginClient
 };
 
 #[tokio::main]
@@ -32,6 +31,8 @@ async fn main() -> anyhow::Result<()> {
     } else {
         println!("No plugins loaded (create config.yaml to load plugins)");
     }
+
+    MigrationsPluginClient::run_migrations(&app_state.plugin_registry).await?;
 
     // Build router with routes
     let app = Router::new()

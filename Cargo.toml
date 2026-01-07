@@ -13,6 +13,8 @@ members = [
 
 [workspace.dependencies]
 wit-bindgen = "0.50.0"
+wasmtime = { git = "https://github.com/bytecodealliance/wasmtime" }
+wasmtime-wasi = { git = "https://github.com/bytecodealliance/wasmtime" }
 wasmledger-sql = { path = "crates/sql" }
 wasmledger-sql-client = { path = "crates/sql-client" }
 wasmledger-utils = { path = "crates/utils" }

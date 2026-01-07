@@ -150,7 +150,7 @@ impl TransactionErasedOps for TransactionImpl {
     }
 }
 
-impl<T> AccessorTask<T, BindingsImplState, Result<(), wasmtime::Error>> for ConnectionBoundTask {
+impl<T> AccessorTask<T, BindingsImplState> for ConnectionBoundTask {
     async fn run(
         mut self,
         accessor: &wasmtime::component::Accessor<T, BindingsImplState>,

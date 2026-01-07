@@ -15,7 +15,7 @@ pub(crate) fn encode<T>(value: T, to: &SqlArguments) -> PushResult
 where
     T: 'static + Encode<'static, Postgres> + Type<Postgres>,
 {
-    let mut args = to.args.blocking_write();
+    let mut args = to.args.borrow_mut();
     args.add(value).map_err(|e| Error::Encode(e.to_string()))
 }
 

@@ -21,16 +21,23 @@ pub fn create_engine() -> anyhow::Result<Engine> {
 
     // Enable async support
     config.async_support(true);
+    config.wasm_component_model(true);
     config.wasm_component_model_async(true);
+    // config.wasm_compo
+    // config.wasm_backtrace_details(wasmtime::WasmBacktraceDetails::Enable);
+    // config.wasm_component_model_async_builtins(true);
+    // config.wasm_component_model_async_stackful(true);
+    // config.wasm_component_model_error_context(true);
+    // config.wasm_component_model_threading(true);
 
     // Enable fuel consumption tracking
-    config.consume_fuel(true);
+    // config.consume_fuel(true);
 
     // Enable epoch interruption for timeouts
-    config.epoch_interruption(true);
+    // config.epoch_interruption(true);
 
     // Enable copy-on-write memory for efficiency
-    config.memory_init_cow(true);
+    // config.memory_init_cow(true);
 
     Ok(Engine::new(&config)?)
 }
