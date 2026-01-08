@@ -5,10 +5,10 @@ members = [
   "crates/money",
   "crates/sql",
   "crates/sql-client",
-  "crates/core",
   "crates/migrations-macro",
   "crates/utils",
-  "crates/host"
+  "crates/host",
+  "crates/actors/core",
 ]
 
 [workspace.dependencies]

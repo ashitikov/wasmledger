@@ -2,7 +2,7 @@ use wasmtime::component::{Component, Linker};
 
 use crate::engine::CoreState;
 
-pub(crate) mod migrations;
+pub(crate) mod migrator;
 
 /// Trait for plugin interfaces that can be linked by the host
 pub trait PluginClient {
@@ -19,7 +19,7 @@ pub fn add_all_clients_to_linker(
     linker: &mut Linker<CoreState>,
 ) -> anyhow::Result<()> {
 
-    migrations::MigrationsPluginClient::add_to_linker(linker)?;
+    migrator::MigrationsPluginClient::add_to_linker(linker)?;
 
     Ok(())
 }

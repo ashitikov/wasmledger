@@ -1,6 +1,6 @@
-package wasmledger:plugin;
+package wasmledger:actor;
 
-interface migrations {
+interface migrator {
   use wasmledger:sql/query.{query-executor};
   use wasmledger:sql/util-types.{error};
 

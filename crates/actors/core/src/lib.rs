@@ -1,6 +1,6 @@
 mod bindings {
     wit_bindgen::generate!({
-        path: ["../../wit/sql", "../../wit/sql/postgres", "../../wit/plugin", "./wit"],
+        path: ["../../../wit/sql", "../../../wit/sql/postgres", "../../../wit/actor", "./wit"],
         world: "wasmledger:core/core",
         with: {
             "wasmledger:sql/query": wasmledger_sql_client::base::bindings::wasmledger::sql::query,

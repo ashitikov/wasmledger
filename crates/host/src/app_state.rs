@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use wasmtime::Engine;
 
-use crate::{config::HostConfig, engine::create_engine, plugin::registry::PluginRegistry};
+use crate::{actor::registry::PluginRegistry, config::HostConfig, engine::create_engine};
 
 /// Shared application state
 #[derive(Clone)]

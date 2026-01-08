@@ -5,5 +5,5 @@ world core {
   import wasmledger:sql/query;
   import wasmledger:sql-postgres/postgres-codecs;
   
-  export wasmledger:plugin/migrations;
+  export wasmledger:actor/migrator;
 }

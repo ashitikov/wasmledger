@@ -9,7 +9,7 @@ use wasmtime::{
 };
 
 use crate::config::HostConfig;
-use crate::plugin::{LoadedPlugin, client};
+use crate::actor::{LoadedPlugin, client};
 use crate::{
     capabilities,
     engine::{CoreState, create_core_state},

@@ -3,15 +3,15 @@ use wasmledger_sql::core::bindings::wasmledger::sql::query::QueryExecutor;
 use wasmtime::component::{Component, Linker};
 
 use crate::{
+    actor::{LoadedPlugin, client::PluginClient, registry::PluginRegistry},
     capabilities::postgres::PostgresState,
     engine::CoreState,
-    plugin::{LoadedPlugin, client::PluginClient, registry::PluginRegistry},
 };
 
 pub(crate) mod bindings {
     wasmtime::component::bindgen!({
-        path: ["../../wit/sql", "../../wit/plugin", "./wit"],
-        world: "wasmledger:plugin-client/client",
+        path: ["../../wit/sql", "../../wit/actor", "./wit"],
+        world: "wasmledger:actor-client/migrator",
         with: {
             "wasmledger:sql/query-types": wasmledger_sql::core::bindings::wasmledger::sql::query_types,
             "wasmledger:sql/util-types": wasmledger_sql::core::bindings::wasmledger::sql::util_types,
@@ -34,13 +34,10 @@ impl PluginClient for MigrationsPluginClient {
     }
 
     fn add_to_linker(linker: &mut Linker<CoreState>) -> anyhow::Result<()> {
-        // Use bindgen-generated method to add interface
-        // This automatically checks if component exports the expected interface
-        bindings::Client::add_to_linker::<CoreState, PostgresState>(
+        bindings::Migrator::add_to_linker::<CoreState, PostgresState>(
             linker,
             |state: &mut CoreState| &mut state.postgres,
-        )
-        .context("Component doesn't support migrations interface")?;
+        )?;
 
         Ok(())
     }
@@ -59,9 +56,9 @@ impl MigrationsPluginClient {
             // Lock store mutex to get mutable access
             let mut store = plugin.store.lock().unwrap();
 
-            if let Some(client) = bindings::Client::new(&mut *store, &plugin.instance).ok() {
+            if let Some(client) = bindings::Migrator::new(&mut *store, &plugin.instance).ok() {
                 tracing::info!(plugin = %plugin.id, "Running migrations");
-                let migrator = client.wasmledger_plugin_migrations();
+                let migrator = client.wasmledger_actor_migrator();
 
                 let res = store
                     .run_concurrent(async |accessor| -> anyhow::Result<()> {

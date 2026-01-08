@@ -1,19 +1,17 @@
+use axum::{Router, routing::post};
 use std::sync::Arc;
-use axum::{
-    Router,
-    routing::post,
-};
 
+mod actor;
 mod api;
-mod config;
 mod app_state;
 mod capabilities;
+mod config;
 mod engine;
 mod execution;
-mod plugin;
 
 use crate::{
-    api::execute_function_handler, app_state::AppState, plugin::client::migrations::MigrationsPluginClient
+    actor::client::migrator::MigrationsPluginClient, api::execute_function_handler,
+    app_state::AppState,
 };
 
 #[tokio::main]
