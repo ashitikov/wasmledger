@@ -1,21 +1,21 @@
 [workspace]
 resolver = "3"
 members = [
+  "crates/capability-sql",
+  "crates/capability-sql-client",
+  "crates/component-core",
+  "crates/lib-money",
+  "crates/host",
   "crates/tx",
-  "crates/money",
-  "crates/sql",
-  "crates/sql-client",
   "crates/migrations-macro",
   "crates/utils",
-  "crates/host",
-  "crates/actors/core",
 ]
 
 [workspace.dependencies]
 wit-bindgen = "0.50.0"
 wasmtime = { git = "https://github.com/bytecodealliance/wasmtime" }
 wasmtime-wasi = { git = "https://github.com/bytecodealliance/wasmtime" }
-wasmledger-sql = { path = "crates/sql" }
-wasmledger-sql-client = { path = "crates/sql-client" }
+wasmledger-capability-sql = { path = "crates/capability-sql" }
+wasmledger-capability-sql-client = { path = "crates/capability-sql-client" }
 wasmledger-utils = { path = "crates/utils" }
 wasmledger-migrations-macro = { path = "crates/migrations-macro" }

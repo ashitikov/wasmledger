@@ -1,23 +1,22 @@
-use anyhow::{Context, Ok, Result};
-use wasmledger_sql::core::bindings::wasmledger::sql::query::QueryExecutor;
-use wasmtime::component::{Component, Linker};
+use anyhow::{Ok, Result};
+use wasmtime::component::Linker;
 
 use crate::{
-    actor::{LoadedPlugin, client::PluginClient, registry::PluginRegistry},
     capabilities::postgres::PostgresState,
+    component::{client::PluginClient, registry::PluginRegistry},
     engine::CoreState,
 };
 
 pub(crate) mod bindings {
     wasmtime::component::bindgen!({
-        path: ["../../wit/sql", "../../wit/actor", "./wit"],
-        world: "wasmledger:actor-client/migrator",
+        path: ["../../wit/sql", "../../wit/component", "./wit"],
+        world: "wasmledger:component-client/migrator",
         with: {
-            "wasmledger:sql/query-types": wasmledger_sql::core::bindings::wasmledger::sql::query_types,
-            "wasmledger:sql/util-types": wasmledger_sql::core::bindings::wasmledger::sql::util_types,
-            "wasmledger:sql/connection": wasmledger_sql::core::bindings::wasmledger::sql::connection,
-            "wasmledger:sql/query": wasmledger_sql::core::bindings::wasmledger::sql::query,
-            "wasmledger:sql/transaction": wasmledger_sql::core::bindings::wasmledger::sql::transaction,
+            "wasmledger:sql/query-types": wasmledger_capability_sql::core::bindings::wasmledger::sql::query_types,
+            "wasmledger:sql/util-types": wasmledger_capability_sql::core::bindings::wasmledger::sql::util_types,
+            "wasmledger:sql/connection": wasmledger_capability_sql::core::bindings::wasmledger::sql::connection,
+            "wasmledger:sql/query": wasmledger_capability_sql::core::bindings::wasmledger::sql::query,
+            "wasmledger:sql/transaction": wasmledger_capability_sql::core::bindings::wasmledger::sql::transaction,
         },
         require_store_data_send: true,
     });
@@ -58,7 +57,7 @@ impl MigrationsPluginClient {
 
             if let Some(client) = bindings::Migrator::new(&mut *store, &plugin.instance).ok() {
                 tracing::info!(plugin = %plugin.id, "Running migrations");
-                let migrator = client.wasmledger_actor_migrator();
+                let migrator = client.wasmledger_component_migrator();
 
                 let res = store
                     .run_concurrent(async |accessor| -> anyhow::Result<()> {

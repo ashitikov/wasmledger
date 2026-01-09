@@ -9,7 +9,7 @@ use wasmtime::{
 };
 
 use crate::config::HostConfig;
-use crate::actor::{LoadedPlugin, client};
+use crate::component::{LoadedPlugin, client};
 use crate::{
     capabilities,
     engine::{CoreState, create_core_state},
@@ -77,7 +77,7 @@ impl PluginRegistry {
 
         // Clone base linker and add capabilities
         let linker = create_default_linker(&self.engine)?;
-
+        
         // Instantiate component
         let instance = linker
             .instantiate_async(&mut store, &component)

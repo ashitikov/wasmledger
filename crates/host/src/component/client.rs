@@ -1,8 +1,9 @@
-use wasmtime::component::{Component, Linker};
+use wasmtime::component::{Linker};
 
 use crate::engine::CoreState;
 
 pub(crate) mod migrator;
+pub(crate) mod component;
 
 /// Trait for plugin interfaces that can be linked by the host
 pub trait PluginClient {

@@ -2,7 +2,7 @@ use serde::Deserialize;
 use std::path::PathBuf;
 use std::time::Duration;
 
-use crate::actor::registry::PluginEntry;
+use crate::component::registry::PluginEntry;
 
 /// Configuration for function execution (limits and timeouts)
 #[derive(Debug, Clone, Deserialize)]

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use wasmledger_sql_client::base::{
+use wasmledger_capability_sql_client::base::{
     bindings::wasmledger::sql::{
         query::{self, QueryExecutor},
         query_types::{SqlArguments, SqlQuery},
@@ -9,7 +9,7 @@ use wasmledger_sql_client::base::{
     decode::DecodeRequired,
     row::RowPointer,
 };
-use wasmledger_sql_client::postgres::bindings::wasmledger::sql_postgres::postgres_codecs::{
+use wasmledger_capability_sql_client::postgres::bindings::wasmledger::sql_postgres::postgres_codecs::{
     get_string, push_string,
 };
 
@@ -139,16 +139,16 @@ macro_rules! impl_migrations_guest_partially {
 
         async fn apply_migration(
             id: $bindings::migrations::MigrationId,
-            executor: wasmledger_sql_client::base::bindings::wasmledger::sql::query::QueryExecutor<
+            executor: wasmledger_capability_sql_client::base::bindings::wasmledger::sql::query::QueryExecutor<
                 '_,
             >,
-        ) -> Result<(), wasmledger_sql_client::base::bindings::wasmledger::sql::util_types::Error> {
+        ) -> Result<(), wasmledger_capability_sql_client::base::bindings::wasmledger::sql::util_types::Error> {
             let query = $migrations
                 .1
                 .get(&id)
                 .expect(&format!("Migration {} not found", id));
 
-            wasmledger_sql_client::base::bindings::wasmledger::sql::query::execute_raw(
+            wasmledger_capability_sql_client::base::bindings::wasmledger::sql::query::execute_raw(
                 query.to_string(),
                 executor,
             )

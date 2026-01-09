@@ -1,12 +1,12 @@
 use std::{env, str::FromStr, sync::Arc};
 
 use tokio::sync::OnceCell;
-use wasmledger_sql::sqldb::{SqlDB, sqlx};
+use wasmledger_capability_sql::sqldb::{SqlDB, sqlx};
 use wasmtime::component::Linker;
 
 use crate::engine::CoreState;
 
-pub type PostgresState = wasmledger_sql::core::bindings::BindingsImplState;
+pub type PostgresState = wasmledger_capability_sql::core::bindings::BindingsImplState;
 
 static DATABASE: OnceCell<Arc<SqlDB>> = OnceCell::const_new();
 
@@ -35,15 +35,15 @@ pub(crate) async fn create_postgres_state() -> anyhow::Result<PostgresState> {
 }
 
 pub fn add_to_linker(linker: &mut Linker<CoreState>) -> anyhow::Result<()> {
-    wasmledger_sql::core::bindings::Host_::add_to_linker::<CoreState, PostgresState>(
+    wasmledger_capability_sql::core::bindings::Host_::add_to_linker::<CoreState, PostgresState>(
         linker,
         |s| &mut s.postgres,
     )?;
 
-    wasmledger_sql::postgres::bindings::CodecsPostgres::add_to_linker::<CoreState, PostgresState>(
-        linker,
-        |s| &mut s.postgres,
-    )?;
+    wasmledger_capability_sql::postgres::bindings::CodecsPostgres::add_to_linker::<
+        CoreState,
+        PostgresState,
+    >(linker, |s| &mut s.postgres)?;
 
     Ok(())
 }

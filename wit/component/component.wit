@@ -1,6 +1,6 @@
-package wasmledger:actor;
+package wasmledger:component;
 
-interface actor {
+interface component {
   on-load: async func();
   on-unload: async func();
 }

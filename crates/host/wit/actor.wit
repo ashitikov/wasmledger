@@ -1,9 +1,0 @@
-package wasmledger:actor-client;
-
-world migrator {
-  export wasmledger:actor/migrator;
-}
-
-world actor {
-  export wasmledger:actor/actor;
-}

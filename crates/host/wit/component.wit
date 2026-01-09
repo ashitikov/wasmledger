@@ -1,0 +1,9 @@
+package wasmledger:component-client;
+
+world migrator {
+  export wasmledger:component/migrator;
+}
+
+world component {
+  export wasmledger:component/component;
+}

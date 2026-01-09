@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 wasmledger-migrations-macro = { workspace = true, optional = true }
-wasmledger-sql-client = { workspace = true, features = [
+wasmledger-capability-sql-client = { workspace = true, features = [
   "postgres",
 ], optional = true }
 
@@ -13,5 +13,5 @@ wasmledger-sql-client = { workspace = true, features = [
 default = ["migrations"]
 migrations = [
   "wasmledger-migrations-macro",
-  "wasmledger-sql-client",
+  "wasmledger-capability-sql-client",
 ]

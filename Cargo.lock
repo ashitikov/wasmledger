@@ -2991,11 +2991,34 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasmledger-actor-core"
+name = "wasmledger-capability-sql"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "bigdecimal",
+ "chrono",
+ "futures",
+ "ipnet",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "wasmtime",
+]
+
+[[package]]
+name = "wasmledger-capability-sql-client"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "wit-bindgen 0.50.0",
+]
+
+[[package]]
+name = "wasmledger-component-core"
+version = "0.1.0"
+dependencies = [
+ "wasmledger-capability-sql-client",
  "wasmledger-migrations-macro",
- "wasmledger-sql-client",
  "wasmledger-utils",
  "wit-bindgen 0.50.0",
 ]
@@ -3013,9 +3036,16 @@ dependencies = [
  "thiserror 2.0.17",
  "tokio",
  "tracing",
- "wasmledger-sql",
+ "wasmledger-capability-sql",
  "wasmtime",
  "wasmtime-wasi",
+ "wit-bindgen 0.50.0",
+]
+
+[[package]]
+name = "wasmledger-lib-money"
+version = "0.1.0"
+dependencies = [
  "wit-bindgen 0.50.0",
 ]
 
@@ -3029,36 +3059,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasmledger-money"
-version = "0.1.0"
-dependencies = [
- "wit-bindgen 0.50.0",
-]
-
-[[package]]
-name = "wasmledger-sql"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "bigdecimal",
- "chrono",
- "futures",
- "ipnet",
- "serde_json",
- "sqlx",
- "tokio",
- "wasmtime",
-]
-
-[[package]]
-name = "wasmledger-sql-client"
-version = "0.1.0"
-dependencies = [
- "serde",
- "wit-bindgen 0.50.0",
-]
-
-[[package]]
 name = "wasmledger-tx"
 version = "0.1.0"
 dependencies = [
@@ -3069,8 +3069,8 @@ dependencies = [
 name = "wasmledger-utils"
 version = "0.1.0"
 dependencies = [
+ "wasmledger-capability-sql-client",
  "wasmledger-migrations-macro",
- "wasmledger-sql-client",
 ]
 
 [[package]]
