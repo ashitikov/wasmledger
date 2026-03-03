@@ -2,5 +2,5 @@ package wasmledger:component;
 
 interface component {
   on-load: async func();
-  on-unload: async func();
+  on-recycle: async func();
 }

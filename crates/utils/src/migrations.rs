@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use wasmledger_capability_sql_client::base::{
-    bindings::wasmledger::sql::{
+use wasmledger_sql_client::base::{
+    bindings::wasm_sql::core::{
         query::{self, QueryExecutor},
         query_types::{SqlArguments, SqlQuery},
         util_types::Error as SqlError,
@@ -9,7 +9,7 @@ use wasmledger_capability_sql_client::base::{
     decode::DecodeRequired,
     row::RowPointer,
 };
-use wasmledger_capability_sql_client::postgres::bindings::wasmledger::sql_postgres::postgres_codecs::{
+use wasmledger_sql_client::postgres::bindings::wasm_sql::postgres::codecs::{
     get_string, push_string,
 };
 
@@ -56,7 +56,7 @@ pub async fn load_table_schema<'a>(
             WHERE table_name = $1
         "#
         .to_string(),
-        args: args,
+        args: Some(args),
         persistent: None,
     };
 
@@ -76,6 +76,7 @@ pub async fn load_table_schema<'a>(
     })
 }
 
+#[derive(Debug)]
 pub struct ColumnExpectationError {
     pub message: String,
 }
@@ -84,6 +85,26 @@ impl From<String> for ColumnExpectationError {
     fn from(value: String) -> Self {
         ColumnExpectationError { message: value }
     }
+}
+
+impl From<ColumnExpectationError> for String {
+    fn from(value: ColumnExpectationError) -> Self {
+        value.message
+    }
+}
+
+/// Generates a `Migration { id, sql }` from a file name.
+/// Expects the SQL file at `../migrations/<name>.sql` relative to the calling file.
+///
+/// Usage: `sql_migration!("001_base")` — requires `Migration` to be in scope.
+#[macro_export]
+macro_rules! sql_migration {
+    ($name:literal) => {
+        Migration {
+            id: $name.to_string(),
+            sql: include_str!(concat!("../migrations/", $name, ".sql")).to_string(),
+        }
+    };
 }
 
 pub fn expect_column(
@@ -103,56 +124,4 @@ pub fn expect_column(
     }
 
     Ok(())
-}
-
-#[macro_export]
-macro_rules! impl_expectation_to_schema_error {
-    ($source:ty, $target:ty) => {
-        impl From<$source> for $target {
-            fn from(e: $source) -> Self {
-                <$target>::SchemaInvalid(e.message)
-            }
-        }
-    };
-}
-#[macro_export]
-macro_rules! impl_sql_to_schema_error {
-    ($source:ty, $target:ty) => {
-        impl From<$source> for $target {
-            fn from(e: $source) -> Self {
-                <$target>::Sql(e)
-            }
-        }
-    };
-}
-
-#[macro_export]
-macro_rules! impl_migrations_guest_partially {
-    ($bindings:ident, $migration_group:expr, $migrations:ident) => {
-        fn get_migration_group() -> String {
-            $migration_group.to_string()
-        }
-
-        async fn list_migrations() -> Vec<$bindings::migrations::MigrationId> {
-            $migrations.0.clone()
-        }
-
-        async fn apply_migration(
-            id: $bindings::migrations::MigrationId,
-            executor: wasmledger_capability_sql_client::base::bindings::wasmledger::sql::query::QueryExecutor<
-                '_,
-            >,
-        ) -> Result<(), wasmledger_capability_sql_client::base::bindings::wasmledger::sql::util_types::Error> {
-            let query = $migrations
-                .1
-                .get(&id)
-                .expect(&format!("Migration {} not found", id));
-
-            wasmledger_capability_sql_client::base::bindings::wasmledger::sql::query::execute_raw(
-                query.to_string(),
-                executor,
-            )
-            .await
-        }
-    };
 }

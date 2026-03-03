@@ -1,0 +1,192 @@
+package wasm-sql:postgres@0.1.0;
+
+/// PostgreSQL-specific type codecs for encoding query arguments and decoding results.
+/// All functions support NULL values via option types.
+interface codecs {
+  use wasm-sql:core/query-types@0.1.0.{sql-arguments, query-results};
+  use wasm-sql:core/util-types@0.1.0.{error};
+  use wasm-sql:core/codecs@0.1.0.{push-result, value-position};
+
+  /// UUID represented as hyphenated string (e.g., "550e8400-e29b-41d4-a716-446655440000").
+  type uuid = string;
+
+  /// HSTORE key-value pairs where values can be NULL.
+  type hstore = list<tuple<string, option<string>>>;
+
+  /// === Date/Time types ===
+  /// DATE represented as ISO 8601 string "YYYY-MM-DD" (e.g., "2024-01-15").
+  type date = string;
+
+  /// TIME represented as ISO 8601 string "HH:MM:SS" or "HH:MM:SS.ffffff" (e.g., "14:30:00.123456").
+  type time = string;
+
+  /// TIMESTAMP (without timezone) represented as ISO 8601 string "YYYY-MM-DDTHH:MM:SS" (e.g., "2024-01-15T14:30:00").
+  type timestamp = string;
+
+  /// TIMESTAMPTZ (with timezone) represented as RFC 3339 string (e.g., "2024-01-15T14:30:00Z" or "2024-01-15T14:30:00+03:00").
+  type timestamptz = string;
+
+  /// PostgreSQL INTERVAL as structured data.
+  record pg-interval {
+    /// Number of months (can be negative).
+    months: s32,
+    /// Number of days (can be negative).
+    days: s32,
+    /// Number of microseconds (can be negative).
+    microseconds: s64,
+  }
+
+  /// === Network types ===
+  /// IPv4 address as 4 bytes (e.g., 192.168.1.1 = (192, 168, 1, 1)).
+  type ipv4-addr = tuple<u8, u8, u8, u8>;
+
+  /// IPv6 address as 8 groups of 16-bit values (e.g., 2001:0db8::1 = (0x2001, 0x0db8, 0, 0, 0, 0, 0, 1)).
+  type ipv6-addr = tuple<u16, u16, u16, u16, u16, u16, u16, u16>;
+
+  /// IP address - either IPv4 or IPv6.
+  variant ip-addr {
+    v4(ipv4-addr),
+    v6(ipv6-addr),
+  }
+
+  /// INET - IP address with prefix length.
+  record inet {
+    /// The IP address (v4 or v6).
+    addr: ip-addr,
+    /// Prefix length (0-32 for IPv4, 0-128 for IPv6).
+    prefix-len: u8,
+  }
+
+  /// CIDR - network address with prefix length (same structure as INET).
+  type cidr = inet;
+
+  /// MAC address as 6 bytes (e.g., 08:00:2b:01:02:03 = (0x08, 0x00, 0x2b, 0x01, 0x02, 0x03)).
+  type macaddr = tuple<u8, u8, u8, u8, u8, u8>;
+
+  /// === Numeric types ===
+  /// NUMERIC (DECIMAL) represented as string for arbitrary precision (e.g., "123.456789012345678901234567890").
+  type numeric = string;
+
+  /// Encodes a 16-bit signed integer (SMALLINT).
+  push-int16: func(value: option<s16>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a 16-bit signed integer (SMALLINT) from results.
+  get-int16: func(%result: borrow<query-results>, position: value-position) -> result<option<s16>, error>;
+
+  /// Encodes a 32-bit signed integer (INTEGER).
+  push-int32: func(value: option<s32>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a 32-bit signed integer (INTEGER) from results.
+  get-int32: func(%result: borrow<query-results>, position: value-position) -> result<option<s32>, error>;
+
+  /// Encodes a 64-bit signed integer (BIGINT).
+  push-int64: func(value: option<s64>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a 64-bit signed integer (BIGINT) from results.
+  get-int64: func(%result: borrow<query-results>, position: value-position) -> result<option<s64>, error>;
+
+  /// Encodes a 32-bit float (REAL).
+  push-float32: func(value: option<f32>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a 32-bit float (REAL) from results.
+  get-float32: func(%result: borrow<query-results>, position: value-position) -> result<option<f32>, error>;
+
+  /// Encodes a 64-bit float (DOUBLE PRECISION).
+  push-float64: func(value: option<f64>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a 64-bit float (DOUBLE PRECISION) from results.
+  get-float64: func(%result: borrow<query-results>, position: value-position) -> result<option<f64>, error>;
+
+  /// Encodes a string (TEXT, VARCHAR, CHAR).
+  push-string: func(value: option<string>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a string (TEXT, VARCHAR, CHAR) from results.
+  get-string: func(%result: borrow<query-results>, position: value-position) -> result<option<string>, error>;
+
+  /// Encodes a boolean (BOOLEAN).
+  push-bool: func(value: option<bool>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a boolean (BOOLEAN) from results.
+  get-bool: func(%result: borrow<query-results>, position: value-position) -> result<option<bool>, error>;
+
+  /// Encodes a JSON value as string (JSON, JSONB).
+  push-json: func(value: option<string>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a JSON value as string (JSON, JSONB) from results.
+  get-json: func(%result: borrow<query-results>, position: value-position) -> result<option<string>, error>;
+
+  /// Encodes a UUID.
+  push-uuid: func(value: option<uuid>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a UUID from results.
+  get-uuid: func(%result: borrow<query-results>, position: value-position) -> result<option<uuid>, error>;
+
+  /// Encodes an HSTORE value.
+  push-hstore: func(value: option<hstore>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes an HSTORE value from results.
+  get-hstore: func(%result: borrow<query-results>, position: value-position) -> result<option<hstore>, error>;
+
+  /// Encodes a DATE value.
+  push-date: func(value: option<date>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a DATE value from results.
+  get-date: func(%result: borrow<query-results>, position: value-position) -> result<option<date>, error>;
+
+  /// Encodes a TIME value.
+  push-time: func(value: option<time>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a TIME value from results.
+  get-time: func(%result: borrow<query-results>, position: value-position) -> result<option<time>, error>;
+
+  /// Encodes a TIMESTAMP value.
+  push-timestamp: func(value: option<timestamp>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a TIMESTAMP value from results.
+  get-timestamp: func(%result: borrow<query-results>, position: value-position) -> result<option<timestamp>, error>;
+
+  /// Encodes a TIMESTAMPTZ value.
+  push-timestamptz: func(value: option<timestamptz>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a TIMESTAMPTZ value from results.
+  get-timestamptz: func(%result: borrow<query-results>, position: value-position) -> result<option<timestamptz>, error>;
+
+  /// Encodes an INTERVAL value.
+  push-interval: func(value: option<pg-interval>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes an INTERVAL value from results.
+  get-interval: func(%result: borrow<query-results>, position: value-position) -> result<option<pg-interval>, error>;
+
+  /// Encodes an INET value.
+  push-inet: func(value: option<inet>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes an INET value from results.
+  get-inet: func(%result: borrow<query-results>, position: value-position) -> result<option<inet>, error>;
+
+  /// Encodes a CIDR value.
+  push-cidr: func(value: option<cidr>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a CIDR value from results.
+  get-cidr: func(%result: borrow<query-results>, position: value-position) -> result<option<cidr>, error>;
+
+  /// Encodes a MACADDR value.
+  push-macaddr: func(value: option<macaddr>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a MACADDR value from results.
+  get-macaddr: func(%result: borrow<query-results>, position: value-position) -> result<option<macaddr>, error>;
+
+  /// Encodes a NUMERIC value.
+  push-numeric: func(value: option<numeric>, to: borrow<sql-arguments>) -> push-result;
+
+  /// Decodes a NUMERIC value from results.
+  get-numeric: func(%result: borrow<query-results>, position: value-position) -> result<option<numeric>, error>;
+}
+
+/// PostgreSQL-specific world providing type codecs.
+/// Import together with wasm-sql:core/host to use PostgreSQL databases.
+world host {
+  import wasm-sql:core/query-types@0.1.0;
+  import wasm-sql:core/util-types@0.1.0;
+  import wasm-sql:core/codecs@0.1.0;
+  import codecs;
+}

@@ -1,0 +1,12 @@
+[package]
+name = "wasmledger-ext-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+wit-bindgen = { workspace = true }
+wasmledger-sql-client = { workspace = true, features = ["postgres"] }
+wasmledger-utils = { workspace = true, features = ["migrations"] }
+
+[lib]
+crate-type = ["cdylib"]

@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-wasmledger-capability-sql = { workspace = true, features = ["postgres"] }
-wit-bindgen = { workspace = true }
+wasm-runtime-composer = { git = "https://github.com/ashitikov/wasm-runtime-composer" }
+wasm-sql = { version = "0.1.6", features = ["postgres"]}
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0.228", features = ["derive"] }
 axum = { version = "0.8.8", features = ["multipart"] }

@@ -4,9 +4,9 @@ use serde_json::Value;
 
 use crate::{
     app_state::AppState,
-    engine::create_core_state,
     capabilities,
     config::ExecutionConfig,
+    engine::create_core_state,
 };
 
 use super::error::ExecutionError;
@@ -44,23 +44,20 @@ impl FunctionExecutor {
             .map_err(|e| ExecutionError::CompilationError(e.to_string()))?;
 
         // 2. Create isolated Store with fresh state
-        let store_state = create_core_state()
-            .await
-            .map_err(|e| ExecutionError::Internal(e))?;
+        let store_state = create_core_state();
         let mut store = Store::new(&self.app_state.engine, store_state);
 
         // 3. Set fuel limit if configured
         let initial_fuel = if let Some(fuel) = config.fuel_limit {
             store
                 .set_fuel(fuel)
-                .map_err(ExecutionError::Internal)?;
+                .map_err(|e| ExecutionError::Internal(e.into()))?;
             Some(fuel)
         } else {
             None
         };
 
-        // 4. Clone plugin linker and add capabilities
-        // let mut linker = self.app_state.plugin_registry.get_linker().clone();
+        // 4. Create linker and add capabilities
         let mut linker = Linker::new(&self.app_state.engine);
         capabilities::add_to_linker(&mut linker)
             .map_err(|e| ExecutionError::Internal(e))?;
@@ -75,7 +72,7 @@ impl FunctionExecutor {
         let fuel_consumed = if let Some(initial) = initial_fuel {
             let remaining = store
                 .get_fuel()
-                .map_err(ExecutionError::Internal)?;
+                .map_err(|e| ExecutionError::Internal(e.into()))?;
             Some(initial - remaining)
         } else {
             None

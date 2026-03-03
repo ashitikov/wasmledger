@@ -6,7 +6,26 @@
       "Bash(file:*)",
       "Bash(cargo tree:*)",
       "Bash(cargo build:*)",
-      "Bash(cargo test:*)"
+      "Bash(cargo test:*)",
+      "Bash(find:*)",
+      "Bash(cargo clippy:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(grep:*)",
+      "Bash(CARGO_TARGET_DIR=./target cargo build:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(cargo expand:*)",
+      "Bash(git -C /Users/ashitikov/wasmledger log --all --full-history --diff-filter=D -- \"wit/sql*\")",
+      "Bash(git -C /Users/ashitikov/wasmledger ls-tree:*)",
+      "Bash(git -C /Users/ashitikov/wasmledger show HEAD:wit/sql/executors.wit)",
+      "Bash(git -C /Users/ashitikov/wasmledger show HEAD:wit/sql/query.wit)",
+      "Bash(git -C /Users/ashitikov/wasmledger show HEAD:wit/sql/types.wit)",
+      "Bash(git -C /Users/ashitikov/wasmledger show HEAD:wit/sql/postgres/codecs.wit)",
+      "Bash(git -C /Users/ashitikov/wasmledger log --all --full-history -- \"wkg.toml\" \"wit/deps.toml\" \"*/deps.toml\")",
+      "Bash(gh repo view ashitikov/wasm-runtime-composer)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(gh api repos/ashitikov/wasm-runtime-composer/git/trees/main?recursive=1 --jq '.tree[].path')",
+      "Bash(git clone https://github.com/ashitikov/wasm-runtime-composer.git /tmp/wasm-runtime-composer)"
     ]
   }
 }

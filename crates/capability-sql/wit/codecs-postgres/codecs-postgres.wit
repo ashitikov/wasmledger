@@ -1,5 +1,0 @@
-package wasmledger:sql-host-postgres-codecs;
-
-world codecs-postgres {
-  import wasmledger:sql-postgres/postgres-codecs;
-}

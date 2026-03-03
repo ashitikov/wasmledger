@@ -1,0 +1,5 @@
+package wasmledger:sql-client;
+
+world client-postgres {
+  import wasm-sql:postgres/codecs@0.1.0;
+}

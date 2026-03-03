@@ -1,0 +1,179 @@
+package wasm-sql:core@0.1.0;
+
+/// Common types used across all wasm-sql interfaces.
+/// Contains error types and basic SQL primitives.
+interface util-types {
+  /// Errors that can occur during SQL operations.
+  variant error {
+    /// Error occurred while encoding a value to SQL format.
+    encode(string),
+    /// Error occurred while decoding a value from SQL format.
+    decode(string),
+    /// Connection pool timed out while waiting for an available connection.
+    pool-timed-out,
+    /// Attempted to acquire a connection from a closed pool.
+    pool-closed,
+    /// Failed to begin a transaction due to unexpected connection state.
+    begin-failed,
+    /// Attempted to perform operation on an already closed or committed transaction.
+    transaction-closed,
+    /// Generic unexpected error with description.
+    unexpected(string),
+  }
+}
+
+/// Base types for database-specific codec implementations.
+/// Codecs handle encoding values to SQL and decoding results.
+interface codecs {
+  use util-types.{error};
+
+  /// Result type for push operations (encoding values to arguments).
+  type push-result = result<_, error>;
+
+  /// Zero-based index of a row in query results.
+  type row-index = u64;
+
+  /// Identifies a column in query results by index or name.
+  variant column-index {
+    /// Column position (zero-based).
+    index(u64),
+    /// Column name as returned by the query.
+    column-name(string),
+  }
+
+  /// Position of a value in query results: (row, column).
+  type value-position = tuple<row-index, column-index>;
+}
+
+/// Database transaction interface for atomic operations.
+interface transaction {
+  use util-types.{error};
+
+  /// A database transaction that groups multiple operations atomically.
+  /// Default behavior on drop: automatic rollback (safe by default).
+  resource transaction {
+    /// Commits all changes made within this transaction.
+    /// Consumes the transaction resource.
+    commit: static async func(this: transaction) -> result<_, error>;
+    /// Rolls back all changes made within this transaction.
+    /// Consumes the transaction resource.
+    rollback: static async func(this: transaction) -> result<_, error>;
+  }
+}
+
+/// Dedicated database connection interface.
+interface connection {
+  use util-types.{error};
+  use transaction.{transaction};
+
+  /// A dedicated database connection acquired from the pool.
+  /// Returned to the pool when dropped or explicitly called release.
+  resource connection {
+    /// Begins a new transaction on this connection.
+    /// If dropped without explicit commit or rollback, the transaction is automatically rolled back.
+    begin-transaction: async func() -> result<transaction, error>;
+    /// Explicitly releases the connection back to the pool.
+    /// Consumes the connection resource.
+    release: static func(this: connection);
+  }
+}
+
+/// Connection pool interface for managing database connections.
+/// The pool automatically handles connection lifecycle and reuse.
+interface pool {
+  use util-types.{error};
+  use transaction.{transaction};
+  use connection.{connection};
+
+  /// Pool state statistics
+  record pool-state {
+    /// Total connections currently managed by the pool
+    size: u64,
+    /// Number of idle (available) connections
+    idle: u64,
+  }
+
+  /// Begins a new transaction from the pool.
+  /// If dropped without explicit commit or rollback, the transaction is automatically rolled back.
+  begin-transaction: async func() -> result<transaction, error>;
+
+  /// Acquires a dedicated connection from the pool.
+  /// Use this when you need multiple operations on the same connection.
+  acquire-connection: async func() -> result<connection, error>;
+
+  /// Returns current pool state
+  get-pool-state: func() -> pool-state;
+}
+
+/// Types for constructing and executing SQL queries.
+interface query-types {
+  /// Raw SQL query string.
+  type sql-string = string;
+
+  /// Container for SQL query arguments.
+  /// Use database-specific codec functions to push values.
+  resource sql-arguments {
+    /// Creates a new empty arguments container.
+    constructor();
+  }
+
+  /// A prepared SQL query with optional arguments and caching settings.
+  record sql-query {
+    /// The SQL query string with parameter placeholders ($1, $2, etc.).
+    sql: sql-string,
+    /// Optional arguments to bind to the query parameters.
+    args: option<sql-arguments>,
+    /// If true or none, the prepared statement will be cached for reuse.
+    persistent: option<bool>,
+  }
+
+  /// Results returned from a SELECT query.
+  /// Use database-specific codec functions to extract values.
+  resource query-results {
+    /// Returns the number of rows in the result set.
+    row-count: func() -> u64;
+  }
+}
+
+/// Query execution interface for running SQL statements.
+interface query {
+  use query-types.{sql-query, sql-string, query-results};
+  use util-types.{error};
+  use connection.{connection};
+  use transaction.{transaction};
+
+  /// Specifies where to execute a query.
+  variant query-executor {
+    /// Execute using a connection from the pool (auto-released after query).
+    pool,
+    /// Execute on a specific connection.
+    connection(borrow<connection>),
+    /// Execute within a transaction.
+    transaction(borrow<transaction>),
+  }
+
+  /// Executes a SELECT query and returns all rows.
+  /// Use database-specific codecs to extract values from results.
+  fetch-all: async func(query: sql-query, executor: query-executor) -> result<query-results, error>;
+
+  /// Executes an INSERT, UPDATE, or DELETE query.
+  /// Returns the number of affected rows.
+  execute: async func(query: sql-query, executor: query-executor) -> result<u64, error>;
+
+  /// Executes a raw SQL string without parameters.
+  /// Use for DDL statements or when parameters are not needed.
+  execute-raw: async func(query: sql-string, executor: query-executor) -> result<_, error>;
+}
+
+/// Core SQL database world providing connection pooling, transactions, and query execution.
+/// Import this world to access SQL databases from a WASM component.
+/// Use together with a database-specific world (e.g., wasm-sql:postgres/host) for type codecs.
+world host {
+  import util-types;
+  import transaction;
+  import connection;
+  import pool;
+  import query-types;
+  import query;
+  import codecs;
+}

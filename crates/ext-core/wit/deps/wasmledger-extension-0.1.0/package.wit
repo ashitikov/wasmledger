@@ -1,0 +1,21 @@
+package wasmledger:extension@0.1.0;
+
+interface lifecycle {
+    on-init: async func();
+    on-shutdown: async func();
+}
+
+interface migration {
+    record migration {
+        id: string,
+        sql: string,
+    }
+
+    extension-id: func() -> string;
+    get-migrations: func() -> list<migration>;
+}
+
+world host {
+    export lifecycle;
+    export migration;
+}

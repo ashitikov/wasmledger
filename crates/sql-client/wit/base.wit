@@ -1,0 +1,10 @@
+package wasmledger:sql-client;
+
+world client-base {
+  import wasm-sql:core/pool@0.1.0;
+  import wasm-sql:core/connection@0.1.0;
+  import wasm-sql:core/transaction@0.1.0;
+  import wasm-sql:core/query@0.1.0;
+  import wasm-sql:core/query-types@0.1.0;
+  import wasm-sql:core/codecs@0.1.0;
+}
