@@ -3,7 +3,7 @@ package wasmledger:extension@0.1.0;
 interface id-gen {
   use wasm-sql:core/query@0.1.0.{query-executor};
 
-  generate-ids: async func(executor: query-executor, count: u64) -> result<list<s64>, string>;
+  generate-ids: async func(executor: query-executor, count: u32) -> result<list<s64>, string>;
 }
 
 interface lifecycle {

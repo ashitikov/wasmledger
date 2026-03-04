@@ -44,9 +44,19 @@ async fn check_schema() -> Result<(), String> {
 
     expect_column(
         &t_accounts,
-        "asset",
+        "currency",
         ColumnInfo {
             data_type: "text".to_string(),
+            nullable: false,
+            default: None,
+        },
+    )?;
+
+    expect_column(
+        &t_accounts,
+        "precision",
+        ColumnInfo {
+            data_type: "smallint".to_string(),
             nullable: false,
             default: None,
         },
@@ -135,9 +145,19 @@ async fn check_schema() -> Result<(), String> {
 
     expect_column(
         &t_transfers,
-        "asset",
+        "currency",
         ColumnInfo {
             data_type: "text".to_string(),
+            nullable: false,
+            default: None,
+        },
+    )?;
+
+    expect_column(
+        &t_transfers,
+        "precision",
+        ColumnInfo {
+            data_type: "smallint".to_string(),
             nullable: false,
             default: None,
         },
@@ -197,7 +217,7 @@ async fn check_schema() -> Result<(), String> {
         &t_transfers,
         "created_at",
         ColumnInfo {
-            data_type: "timestamp without time zone".to_string(),
+            data_type: "timestamp with time zone".to_string(),
             nullable: false,
             default: Some("now()".to_string()),
         },

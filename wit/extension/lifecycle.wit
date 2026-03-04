@@ -1,0 +1,6 @@
+package wasmledger:extension@0.1.0;
+
+interface lifecycle {
+    on-init: async func();
+    on-shutdown: async func();
+}

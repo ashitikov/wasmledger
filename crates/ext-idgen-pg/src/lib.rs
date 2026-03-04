@@ -1,7 +1,7 @@
 mod bindings {
     wit_bindgen::generate!({
         path: "./wit",
-        world: "wasmledger:ext-core/core",
+        world: "wasmledger:ext-idgen-pg/idgen-pg",
         with: {
             "wasm-sql:core/query@0.1.0": wasmledger_sql_client::base::bindings::wasm_sql::core::query,
             "wasm-sql:core/query-types@0.1.0": wasmledger_sql_client::base::bindings::wasm_sql::core::query_types,
@@ -17,7 +17,7 @@ mod bindings {
     export!(BindingsImpl);
 }
 
-mod lifecycle;
+mod idgen;
 mod migrations;
 
 pub struct BindingsImpl;

@@ -2954,6 +2954,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "wasmledger-ext-idgen-pg"
+version = "0.1.0"
+dependencies = [
+ "wasmledger-sql-client",
+ "wasmledger-utils",
+ "wit-bindgen 0.51.0",
+]
+
+[[package]]
 name = "wasmledger-host"
 version = "0.1.0"
 dependencies = [

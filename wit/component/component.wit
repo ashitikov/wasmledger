@@ -1,6 +1,0 @@
-package wasmledger:component;
-
-interface component {
-  on-load: async func();
-  on-recycle: async func();
-}

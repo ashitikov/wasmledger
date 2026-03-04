@@ -3,6 +3,7 @@ resolver = "3"
 members = [
   "crates/sql-client",
   "crates/ext-core",
+  "crates/ext-idgen-pg",
   "crates/lib-money",
   "crates/host",
   "crates/tx",

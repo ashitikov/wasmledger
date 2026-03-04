@@ -1,10 +1,10 @@
-package wasmledger:ext-core;
+package wasmledger:ext-idgen-pg;
 
-world core {
+world idgen-pg {
   import wasm-sql:core/transaction@0.1.0;
   import wasm-sql:core/query@0.1.0;
   import wasm-sql:postgres/codecs@0.1.0;
 
-  export wasmledger:extension/lifecycle@0.1.0;
   export wasmledger:extension/migration@0.1.0;
+  export wasmledger:extension/id-gen@0.1.0;
 }

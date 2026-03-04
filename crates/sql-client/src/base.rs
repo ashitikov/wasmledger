@@ -7,6 +7,12 @@ pub mod bindings {
     });
 }
 
+impl From<bindings::wasm_sql::core::util_types::Error> for String {
+    fn from(value: bindings::wasm_sql::core::util_types::Error) -> Self {
+        format!("{value:?}")
+    }
+}
+
 pub mod column;
 pub mod decode;
 pub mod iter;

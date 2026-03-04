@@ -1,2 +1,2 @@
 [overrides]
-"wasmledger:sql-migration" = { path = "./wit/sql-migration" }
+"wasmledger:extension" = { path = "./wit/extension" }

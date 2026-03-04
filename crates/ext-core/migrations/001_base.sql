@@ -2,11 +2,12 @@ CREATE TABLE
   accounts (
     id TEXT NOT NULL, -- account identifier (external, user-defined)
     bucket TEXT NOT NULL, -- bucket / balance / color
-    asset TEXT NOT NULL, -- currency + precision, e.g. USD/2
+    currency TEXT NOT NULL, -- e.g. USD, EUR
+    precision SMALLINT NOT NULL, -- decimal places, e.g. 2
     in_volume BIGINT NOT NULL DEFAULT 0,
     out_volume BIGINT NOT NULL DEFAULT 0,
     last_transfer_id BIGINT NULL, -- last applied transfer (snowflake)
-    PRIMARY KEY (id, bucket, asset)
+    PRIMARY KEY (id, bucket, currency)
   );
 
 CREATE TABLE
@@ -16,12 +17,13 @@ CREATE TABLE
     dst TEXT NOT NULL, -- destination account id
     src_bucket TEXT NULL, -- NULL = ephemeral
     dst_bucket TEXT NULL, -- NULL = ephemeral
-    asset TEXT NOT NULL,
+    currency TEXT NOT NULL,
+    precision SMALLINT NOT NULL,
     amount BIGINT NOT NULL, -- minimal units
     -- snapshots AFTER transfer
     src_bucket_in_volume BIGINT NULL, -- NULL = ephemeral
     src_bucket_out_volume BIGINT NULL, -- NULL = ephemeral
     dst_bucket_in_volume BIGINT NULL, -- NULL = ephemeral
     dst_bucket_out_volume BIGINT NULL, -- NULL = ephemeral
-    created_at TIMESTAMP NOT NULL DEFAULT now ()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now ()
   );
