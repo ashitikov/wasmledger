@@ -7,7 +7,7 @@ CREATE TABLE
     in_volume BIGINT NOT NULL DEFAULT 0,
     out_volume BIGINT NOT NULL DEFAULT 0,
     last_transfer_id BIGINT NULL, -- last applied transfer (snowflake)
-    PRIMARY KEY (id, bucket, currency)
+    PRIMARY KEY (id, bucket, currency, precision)
   );
 
 CREATE TABLE

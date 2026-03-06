@@ -10,6 +10,7 @@ mod bindings {
             "wasm-sql:core/connection@0.1.0": wasmledger_sql_client::base::bindings::wasm_sql::core::connection,
             "wasm-sql:core/codecs@0.1.0": wasmledger_sql_client::base::bindings::wasm_sql::core::codecs,
             "wasm-sql:postgres/codecs@0.1.0": wasmledger_sql_client::postgres::bindings::wasm_sql::postgres::codecs,
+            "wasmledger:extension/id-gen@0.1.0": generate
         },
     });
 

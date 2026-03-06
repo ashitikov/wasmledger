@@ -3,7 +3,14 @@ package wasmledger:extension@0.1.0;
 interface id-gen {
   use wasm-sql:core/query@0.1.0.{query-executor};
 
-  generate-ids: async func(executor: query-executor, count: u64) -> result<list<s64>, string>;
+  record gen-id-context {
+    /// Query executor used to perform the transfer.
+    executor: query-executor,
+    /// Shard identifier
+    shard-id: u16,
+  }
+
+  generate-ids: async func(count: u32, context: gen-id-context) -> result<list<s64>, string>;
 }
 
 interface lifecycle {

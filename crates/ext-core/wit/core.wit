@@ -1,10 +1,47 @@
 package wasmledger:ext-core;
 
-world core {
+interface core {
+  use types.{
+    account-key, account-info, account-ref,
+    acquired-accounts, created-accounts, error,
+    transfer-entry, transfer-plan-projection, transfer-result,
+  };
+
+  /// Set of accounts locked for exclusive access until the transaction ends.
+  resource account-set {
+    /// Returns all locked accounts.
+    %list: func() -> list<account-info>;
+  }
+
+  /// Prepared batch of transfers, ready for projection inspection and execution.
+  resource transfer-plan {
+    /// Read-only projection of the plan: per-entry and per-account volumes.
+    projection: func() -> transfer-plan-projection;
+  }
+
+  /// Lock requested accounts. Returns existing accounts and indices of missing keys.
+  acquire-accounts: async func(keys: list<account-key>) -> result<acquired-accounts, error>;
+
+  /// Prepare a plan: validate refs, compute projected volumes.
+  /// account-set is borrowed — can be reused for additional plans.
+  make-plan: func(accounts: borrow<account-set>, transfers: list<transfer-entry>) -> result<transfer-plan, error>;
+
+  /// Commit the plan: generate IDs, INSERT transfers, UPDATE account volumes.
+  /// Consumes the plan.
+  execute-plan: async func(plan: transfer-plan) -> result<list<transfer-result>, error>;
+
+  /// Create accounts in batch. Returns created and already-existing accounts, locked.
+  create-accounts: async func(keys: list<account-key>) -> result<created-accounts, error>;
+}
+
+world host {
   import wasm-sql:core/transaction@0.1.0;
   import wasm-sql:core/query@0.1.0;
   import wasm-sql:postgres/codecs@0.1.0;
 
+  import wasmledger:extension/id-gen@0.1.0;
   export wasmledger:extension/lifecycle@0.1.0;
   export wasmledger:extension/migration@0.1.0;
+
+  export core;
 }

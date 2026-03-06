@@ -1,0 +1,94 @@
+package wasmledger:ext-core;
+
+interface types {
+  /// Reference to an account within an account-set.
+  type account-ref = u32;
+
+  /// Full account primary key.
+  record account-key {
+    id: string,
+    bucket: string,
+    currency: string,
+    precision: s16,
+  }
+
+  /// Account state returned from account-set.
+  record account-info {
+    id: string,
+    bucket: string,
+    currency: string,
+    precision: s16,
+    in-volume: s64,
+    out-volume: s64,
+    /// reference in account-set
+    ref: account-ref,
+  }
+
+  /// A single transfer within a plan.
+  record transfer-entry {
+    src: account-ref,
+    dst: account-ref,
+    amount: s64,
+  }
+
+  // ---- Projection (read-only view of a prepared plan) ----
+
+  /// Per-transfer projected volumes AFTER the transfer is applied.
+  record projection-entry {
+    transfer: transfer-entry,
+    src-in-volume: s64,
+    src-out-volume: s64,
+    src-balance: s64,
+    dst-in-volume: s64,
+    dst-out-volume: s64,
+    dst-balance: s64,
+  }
+
+  /// Per-account final state AFTER all transfers in the plan.
+  record projection-account {
+    account: account-info,
+    in-volume: s64,
+    out-volume: s64,
+    balance: s64,
+    /// Net balance change across all transfers in the plan.
+    balance-delta: s64,
+  }
+
+  /// Full projection of a transfer plan.
+  record transfer-plan-projection {
+    entries: list<projection-entry>,
+    accounts: list<projection-account>,
+  }
+
+  /// Result of acquiring accounts.
+  record acquired-accounts {
+    /// The locked accounts (only those that exist).
+    accounts: account-set,
+    /// Indices of requested keys that were not found.
+    missing: list<u32>,
+  }
+
+  /// Result of creating accounts.
+  record created-accounts {
+    /// The newly created accounts, locked.
+    accounts: account-set,
+    /// Indices of requested keys that already existed.
+    existing: list<u32>,
+  }
+
+  variant error {
+    /// account-ref does not exist in account-set.
+    invalid-ref(account-ref),
+    /// Unexpected internal error.
+    unexpected(string),
+  }
+
+  /// Result of a single committed transfer.
+  record transfer-result {
+    id: s64,
+    src-in-volume: s64,
+    src-out-volume: s64,
+    dst-in-volume: s64,
+    dst-out-volume: s64,
+  }
+}
